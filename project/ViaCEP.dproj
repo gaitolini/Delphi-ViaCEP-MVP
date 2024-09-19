@@ -83,6 +83,11 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <Icon_MainIcon>ViaCEP_Icon.ico</Icon_MainIcon>
+        <UWP_DelphiLogo44>..\..\..\Imagens\flaticons.anderson\yellow\Light-Bulb-256.png</UWP_DelphiLogo44>
+        <UWP_DelphiLogo150>..\..\..\Imagens\flaticons.anderson\yellow\Light-Bulb-256.png</UWP_DelphiLogo150>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -98,8 +103,25 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="..\src\utils\view.utils.pas"/>
+        <DCCReference Include="..\src\views\view.layout.pas">
+            <Form>viewLayout</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <DCCReference Include="..\src\views\view.main.pas">
-            <Form>Form1</Form>
+            <Form>viewMain</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\src\views\view.base.pas">
+            <Form>viewBase</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\src\views\view.buscacep.pas">
+            <Form>viewBuscaCEP</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\src\views\view.endereco.pas">
+            <Form>viewEndereco</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
@@ -122,11 +144,29 @@
                 <Source>
                     <Source Name="MainSource">ViaCEP.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\iteidebcb260.bpl">Embarcadero Integrated Translation Environment for BCB</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\inetdbxpress260.bpl">(untitled)</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\inetdb260.bpl">Embarcadero Internet/World Wide Web database components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Program Files (x86)\FastReport 6 VCL Enterprise\LibD26\dclfrx26.bpl">FastReport 6.0 Components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Bpl\dclGoogleOAuth2Authenticator%Auto%.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\20.0\Bpl\dclGoogleOAuth2Authenticator%Auto%.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k260.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp260.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k260.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp260.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
                 <DeployFile LocalName="Win32\Debug\ViaCEP.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>ViaCEP.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\..\Imagens\flaticons.anderson\yellow\Light-Bulb-256.png" Configuration="Debug" Class="UWP_DelphiLogo44">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo44x44.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
