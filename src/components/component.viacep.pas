@@ -174,16 +174,18 @@ begin
           begin
             // Se for um array, tratamos como um array de endereços
             JSONArray := TJSONArray(JSONResult);
-            Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
           end
           else if JSONResult is TJSONObject then
           begin
-            // Se for um objeto JSON, tratamos como um único endereço
-            JSONObject := TJSONObject(JSONResult);
-            Result := T(TSerializableJSON.Create(JSONObject.Clone as TJSONObject));
+            // Se for um objeto JSON, converte para um array
+            JSONArray := TJSONArray.Create;
+            JSONArray.AddElement(TJSONObject(JSONResult.Clone as TJSONValue)); // Adiciona o objeto ao array
           end
           else
             raise Exception.Create('Erro ao parsear o retorno JSON.');
+
+          // Retorna o JSON como array de endereços
+          Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
         end
         else
           raise Exception.Create('Erro ao parsear o retorno JSON.');
@@ -239,6 +241,114 @@ begin
 
   DoResponse(ResponseContent, StatusCode, Erro);
 end;
+
+//function TViaCEPClient.Consultar<T>: T;
+//var
+//  LResponse: IHTTPResponse;
+//  LURL, ResponseContent: string;
+//  JSONResult: TJSONValue;
+//  JSONArray: TJSONArray;
+//  JSONObject: TJSONObject;
+//  XMLResult: IXMLDocument;
+//  XMLNodes: IXMLNodeList;
+//  StatusCode: Integer;
+//  Erro: Boolean;
+//begin
+//  Erro := False;
+//  StatusCode := 0;
+//
+//  DoRequest;
+//
+//  // Verifica se deve realizar a busca por CEP ou por endereço completo
+//  if IsCEP(FInput) then
+//    LURL := BuildURLByCEP<T>(FInput)
+//  else
+//    LURL := BuildURLByEndereco<T>(FInput);
+//
+//  try
+//    FHttpClient.AcceptCharSet := 'utf-8';
+//    LResponse := FHttpClient.Get(LURL);
+//    StatusCode := LResponse.StatusCode;
+//    ResponseContent := LResponse.ContentAsString.Trim.Replace(#13, '').Replace(#10, '');
+//
+//    if LResponse.StatusCode = 200 then
+//    begin
+//      if TypeInfo(T) = TypeInfo(TSerializableJSON) then
+//      begin
+//        // Trata JSON (pode ser objeto ou array)
+//        JSONResult := TJSONObject.ParseJSONValue(ResponseContent);
+//
+//        if Assigned(JSONResult) then
+//        begin
+//          if JSONResult is TJSONArray then
+//          begin
+//            // Se for um array, tratamos como um array de endereços
+//            JSONArray := TJSONArray(JSONResult);
+//            Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
+//          end
+//          else if JSONResult is TJSONObject then
+//          begin
+//            // Se for um objeto JSON, tratamos como um único endereço
+//            JSONObject := TJSONObject(JSONResult);
+//            Result := T(TSerializableJSON.Create(JSONObject.Clone as TJSONObject));
+//          end
+//          else
+//            raise Exception.Create('Erro ao parsear o retorno JSON.');
+//        end
+//        else
+//          raise Exception.Create('Erro ao parsear o retorno JSON.');
+//      end
+//      else if TypeInfo(T) = TypeInfo(TSerializableXML) then
+//      begin
+//        // Trata XML (pode ser um ou múltiplos endereços)
+//        XMLResult := TXMLDocument.Create(nil);
+//        XMLResult.LoadFromXML(ResponseContent);
+//
+//        // Verifica se há múltiplos nós de endereços
+//        XMLNodes := XMLResult.DocumentElement.ChildNodes;
+//
+//        if XMLNodes.Count > 1 then
+//        begin
+//          // Se houver mais de um nó de endereço
+//          Result := T(TSerializableXML.Create(XMLResult));
+//        end
+//        else
+//        begin
+//          // Apenas um nó de endereço
+//          Result := T(TSerializableXML.Create(XMLResult));
+//        end;
+//      end;
+//    end
+//    else
+//    begin
+//      Erro := True;
+//      if TypeInfo(T) = TypeInfo(TSerializableJSON) then
+//        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+//      else
+//      begin
+//        XMLResult := TXMLDocument.Create(nil);
+//        XMLResult.LoadFromXML('<root></root>');
+//        Result := T(TSerializableXML.Create(XMLResult));
+//      end;
+//    end;
+//  except
+//    on E: Exception do
+//    begin
+//      Erro := True;
+//      ResponseContent := E.Message;
+//      if TypeInfo(T) = TypeInfo(TSerializableJSON) then
+//        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+//      else
+//      begin
+//        XMLResult := TXMLDocument.Create(nil);
+//        XMLResult.LoadFromXML('<root></root>');
+//        Result := T(TSerializableXML.Create(XMLResult));
+//      end;
+//    end;
+//  end;
+//
+//  DoResponse(ResponseContent, StatusCode, Erro);
+//end;
 
 
 constructor TSerializableJSON.Create(AJSON: TJSONObject);

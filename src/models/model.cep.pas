@@ -27,7 +27,7 @@ type
     destructor Destroy; override;
 
     procedure LoadFromJSON(AJSON: TJSONObject);
-    procedure LoadFromXML(AXML: IXMLDocument);
+    procedure LoadFromXML(AXMLNode: IXMLNode);
     procedure SaveToDatabase;
     procedure LoadFromDatabase(ACEP: string);
 
@@ -80,24 +80,25 @@ begin
   FSIAFI := AJSON.GetValue<string>('siafi');
 end;
 
-procedure TCEPModel.LoadFromXML(AXML: IXMLDocument);
+procedure TCEPModel.LoadFromXML(AXMLNode: IXMLNode);
 begin
-  if AXML = nil then
+  if AXMLNode = nil then
     raise Exception.Create('O objeto XML está nulo.');
 
-  FCEP := AXML.DocumentElement.ChildNodes['cep'].Text.Replace('-', '');
-  FLogradouro := AXML.DocumentElement.ChildNodes['logradouro'].Text;
-  FComplemento := AXML.DocumentElement.ChildNodes['complemento'].Text;
-  FBairro := AXML.DocumentElement.ChildNodes['bairro'].Text;
-  FLocalidade := AXML.DocumentElement.ChildNodes['localidade'].Text;
-  FUF := AXML.DocumentElement.ChildNodes['uf'].Text;
-  FEstado := AXML.DocumentElement.ChildNodes['estado'].Text;
-  FRegiao := AXML.DocumentElement.ChildNodes['regiao'].Text;
-  FIBGE := AXML.DocumentElement.ChildNodes['ibge'].Text;
-  FGIA := AXML.DocumentElement.ChildNodes['gia'].Text;
-  FDDD := AXML.DocumentElement.ChildNodes['ddd'].Text;
-  FSIAFI := AXML.DocumentElement.ChildNodes['siafi'].Text;
+  FCEP := AXMLNode.ChildValues['cep'];
+  FLogradouro := AXMLNode.ChildValues['logradouro'];
+  FComplemento := AXMLNode.ChildValues['complemento'];
+  FBairro := AXMLNode.ChildValues['bairro'];
+  FLocalidade := AXMLNode.ChildValues['localidade'];
+  FUF := AXMLNode.ChildValues['uf'];
+  FEstado := AXMLNode.ChildValues['estado'];
+  FRegiao := AXMLNode.ChildValues['regiao'];
+  FIBGE := AXMLNode.ChildValues['ibge'];
+  FGIA := AXMLNode.ChildValues['gia'];
+  FDDD := AXMLNode.ChildValues['ddd'];
+  FSIAFI := AXMLNode.ChildValues['siafi'];
 end;
+
 
 procedure TCEPModel.SaveToDatabase;
 begin

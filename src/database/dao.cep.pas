@@ -3,19 +3,19 @@ unit dao.cep;
 interface
 
 uses
-  model.cep, FireDAC.Comp.Client, Data.DB, System.SysUtils;
+  model.cep, FireDAC.Comp.Client, Data.DB, System.SysUtils, System.Generics.Collections;
 
 type
   TCEPDAO = class
   private
     FConnection: TFDConnection;
     FQuery: TFDQuery;
-
   public
     constructor Create(AConnection: TFDConnection);
     destructor Destroy; override;
     procedure Insert(ACEPModel: TCEPModel);
     function CEPExists(AInput: string; out AID: Integer): Boolean;
+    function CheckExistingAddresses(Enderecos: TList<TCEPModel>): TList<TCEPModel>;
     procedure Update(ACEPModel: TCEPModel);
   end;
 
@@ -93,6 +93,36 @@ begin
 
   FQuery.Close;
 end;
+
+function TCEPDAO.CheckExistingAddresses(Enderecos: TList<TCEPModel>): TList<TCEPModel>;
+var
+  Endereco: TCEPModel;
+  ExistingList: TList<TCEPModel>;
+begin
+  ExistingList := TList<TCEPModel>.Create;
+
+  try
+    for Endereco in Enderecos do
+    begin
+      // Verifica se o endereço já existe no banco de dados
+      FQuery.SQL.Text := 'SELECT id FROM ceps WHERE uf = :uf AND localidade = :localidade AND logradouro = :logradouro';
+      FQuery.ParamByName('uf').AsString := Endereco.UF;
+      FQuery.ParamByName('localidade').AsString := Endereco.Localidade;
+      FQuery.ParamByName('logradouro').AsString := Endereco.Logradouro;
+
+      FQuery.Open;
+      if not FQuery.Eof then
+        ExistingList.Add(Endereco);  // Adiciona à lista de endereços já existentes
+      FQuery.Close;
+    end;
+
+    Result := ExistingList;
+  except
+    ExistingList.Free;
+    raise;
+  end;
+end;
+
 
 procedure TCEPDAO.Update(ACEPModel: TCEPModel);
 begin
