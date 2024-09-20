@@ -132,7 +132,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 0
           end
-          object edtCEP: TEdit
+          object edtLocation: TEdit
             AlignWithMargins = True
             Left = 152
             Top = 6
@@ -153,6 +153,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 1
             TextHint = 'UF, Cidade, Logradouro or CEP'
+            ExplicitHeight = 33
           end
           object btnInsert: TButton
             AlignWithMargins = True
@@ -168,7 +169,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
-            ExplicitLeft = 259
           end
           object btnNavDB_Prior: TButton
             AlignWithMargins = True
@@ -185,7 +185,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 3
-            ExplicitLeft = 408
           end
           object btnNavDB_First: TButton
             AlignWithMargins = True
@@ -202,7 +201,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
-            ExplicitLeft = 372
           end
           object btnNavDB_Next: TButton
             AlignWithMargins = True
@@ -219,7 +217,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 5
-            ExplicitLeft = 444
           end
           object btnNavDB_Last: TButton
             AlignWithMargins = True
@@ -236,7 +233,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 6
-            ExplicitLeft = 480
           end
           object btnNavDB_Delete: TButton
             AlignWithMargins = True
@@ -253,7 +249,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 7
-            ExplicitLeft = 516
           end
           object btnNavDB_Refresh: TButton
             AlignWithMargins = True
@@ -270,7 +265,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 8
-            ExplicitLeft = 552
           end
           object btnSaveJSON: TButton
             AlignWithMargins = True
@@ -287,7 +281,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 9
-            ExplicitLeft = 588
           end
           object btnSaveAsXML: TButton
             AlignWithMargins = True
@@ -304,7 +297,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 10
-            ExplicitLeft = 624
           end
         end
       end
@@ -391,8 +383,8 @@ inherited viewBuscaCEP: TviewBuscaCEP
     end
   end
   object ilConsultaCEP: TImageList
-    Left = 680
-    Top = 318
+    Left = 672
+    Top = 286
     Bitmap = {
       494C01010F002000040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040

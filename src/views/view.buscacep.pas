@@ -46,7 +46,7 @@ type
     dbgEndereco: TDBGrid;
     pnlMenu: TPanel;
     rgTipo: TRadioGroup;
-    edtCEP: TEdit;
+    edtLocation: TEdit;
     btnInsert: TButton;
     btnNavDB_Prior: TButton;
     btnNavDB_First: TButton;
@@ -91,7 +91,7 @@ begin
   Controller := TCEPController.Create(dm.connViacep);
   try
     // Consulta do CEP: verifica se o RadioGroup está selecionado para JSON ou XML
-    Success := Controller.ConsultarCEP(edtCEP.Text, rgTipo.ItemIndex = 0);
+    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0);
 
     if Success then
     begin

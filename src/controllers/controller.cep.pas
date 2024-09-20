@@ -39,19 +39,21 @@ end;
 
 function TCEPController.ConsultarCEP(ACEP: string; AFormatoJSON: Boolean): Boolean;
 var
-  JSONResult: TJSONObject;
+  JSONObject: TJSONObject;
   XMLResult: IXMLDocument;
 begin
   Result := False;
 
   if AFormatoJSON then
   begin
-    JSONResult := FService.ConsultarCEPJSON(ACEP);
-    if JSONResult <> nil then
+    JSONObject := FService.ConsultarCEPJSON(ACEP);
+
+    if (JSONObject <> nil) then
     begin
-      FModel.LoadFromJSON(JSONResult);
+      FModel.LoadFromJSON(JSONObject);
       Result := True;
     end;
+
   end
   else
   begin

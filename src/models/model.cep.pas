@@ -3,7 +3,7 @@ unit model.cep;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Comp.Client, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf;
+  System.SysUtils, System.Classes, FireDAC.Comp.Client, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs;
 
 type
   TCEPModel = class
@@ -62,6 +62,10 @@ end;
 
 procedure TCEPModel.LoadFromJSON(AJSON: TJSONObject);
 begin
+
+  if AJSON = nil then
+    raise Exception.Create('O objeto JSON está nulo.');
+
   FCEP := AJSON.GetValue<string>('cep');
   FLogradouro := AJSON.GetValue<string>('logradouro');
   FComplemento := AJSON.GetValue<string>('complemento');
@@ -78,6 +82,9 @@ end;
 
 procedure TCEPModel.LoadFromXML(AXML: IXMLDocument);
 begin
+  if AXML = nil then
+    raise Exception.Create('O objeto XML está nulo.');
+
   FCEP := AXML.DocumentElement.ChildNodes['cep'].Text;
   FLogradouro := AXML.DocumentElement.ChildNodes['logradouro'].Text;
   FComplemento := AXML.DocumentElement.ChildNodes['complemento'].Text;
