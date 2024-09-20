@@ -34,7 +34,7 @@ function TViaCEPService.ConsultarCEPJSON(ACEP: string): TJSONObject;
 var
   JSONResult: ISerializable;
 begin
-  FViaCEPClient.CEP := ACEP;
+  FViaCEPClient.Input := ACEP;
   JSONResult := FViaCEPClient.Consultar<TSerializableJSON>;
   Result := JSONResult.AsJSON;
 end;
@@ -43,7 +43,7 @@ function TViaCEPService.ConsultarCEPXML(ACEP: string): IXMLDocument;
 var
   XMLResult: ISerializable;
 begin
-  FViaCEPClient.CEP := ACEP;
+  FViaCEPClient.Input := ACEP;
   XMLResult := FViaCEPClient.Consultar<TSerializableXML>;
   Result := XMLResult.AsXML;
 end;
