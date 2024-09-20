@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{95ECF28D-9C4B-4571-8030-A119150D9B7F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ViaCEP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\APIBoleto\Project\ProjectAPI.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\src\components\pkgViaCEP.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\src\components\examples\ProjectViaCEPBasic.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ViaCEP">
+        <MSBuild Projects="ViaCEP.dproj"/>
+    </Target>
+    <Target Name="ViaCEP:Clean">
+        <MSBuild Projects="ViaCEP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ViaCEP:Make">
+        <MSBuild Projects="ViaCEP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ProjectAPI">
+        <MSBuild Projects="..\..\APIBoleto\Project\ProjectAPI.dproj"/>
+    </Target>
+    <Target Name="ProjectAPI:Clean">
+        <MSBuild Projects="..\..\APIBoleto\Project\ProjectAPI.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjectAPI:Make">
+        <MSBuild Projects="..\..\APIBoleto\Project\ProjectAPI.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pkgViaCEP">
+        <MSBuild Projects="..\src\components\pkgViaCEP.dproj"/>
+    </Target>
+    <Target Name="pkgViaCEP:Clean">
+        <MSBuild Projects="..\src\components\pkgViaCEP.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pkgViaCEP:Make">
+        <MSBuild Projects="..\src\components\pkgViaCEP.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ProjectViaCEPBasic">
+        <MSBuild Projects="..\src\components\examples\ProjectViaCEPBasic.dproj"/>
+    </Target>
+    <Target Name="ProjectViaCEPBasic:Clean">
+        <MSBuild Projects="..\src\components\examples\ProjectViaCEPBasic.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjectViaCEPBasic:Make">
+        <MSBuild Projects="..\src\components\examples\ProjectViaCEPBasic.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ViaCEP;ProjectAPI;pkgViaCEP;ProjectViaCEPBasic"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ViaCEP:Clean;ProjectAPI:Clean;pkgViaCEP:Clean;ProjectViaCEPBasic:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ViaCEP:Make;ProjectAPI:Make;pkgViaCEP:Make;ProjectViaCEPBasic:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
