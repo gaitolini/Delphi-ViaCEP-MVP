@@ -131,6 +131,7 @@ begin
     raise Exception.Create('Tipo de retorno desconhecido.');
 
   try
+    FHttpClient.AcceptCharSet := 'utf-8';
     LResponse := FHttpClient.Get(LURL);
     StatusCode := LResponse.StatusCode;
     ResponseContent := LResponse.ContentAsString;
