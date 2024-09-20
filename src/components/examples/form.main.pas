@@ -19,12 +19,12 @@ type
   TForm1 = class(TForm)
     ViaCEPClient1: TViaCEPClient;
     pnlTop: TPanel;
-    edtCEP: TEdit;
     rgTipo: TRadioGroup;
     btnConsultar: TButton;
     pnlMain: TPanel;
     statConsultaCEP: TStatusBar;
     mmoResultado: TMemo;
+    edtLocation: TButtonedEdit;
     procedure btnConsultarClick(Sender: TObject);
     procedure ViaCEPClient1Request(Sender: TObject);
     procedure ViaCEPClient1Response(Sender: TObject; const Body: string;
@@ -53,7 +53,7 @@ var
   aJson: TJsonObject;
   aXML: IXMLDocument;
 begin
-  ViaCEPClient1.CEP := edtCEP.Text;
+  ViaCEPClient1.Input := edtLocation.Text;
 
   // Consultar JSON
   if rgTipo.ItemIndex = 0 then
