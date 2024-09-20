@@ -64,6 +64,8 @@ type
     DatasetRefresh1: TDataSetRefresh;
     procedure FormCreate(Sender: TObject);
     procedure actConsultarCepExecute(Sender: TObject);
+    procedure edtLocationKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -80,29 +82,123 @@ uses
 
 {$R *.dfm}
 
+//procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
+//var
+//  Controller: TCEPController;
+//  Success: Boolean;
+//  InputText: string;
+//  aInteger: Integer;
+//begin
+//  inherited;
+//
+//  // Criando o controller e inicializando com a conexão do DataModule
+//  Controller := TCEPController.Create(dm.connViacep);
+//  try
+//    InputText := edtLocation.Text;
+//
+//    if Length(InputText) < 3 then
+//    begin
+//      ShowMessage('O CEP ou endereço informado deve conter pelo menos 3 caracteres.');
+//      Exit;
+//    end;
+//
+//    Success := Controller.ConsultarCEP(InputText, rgTipo.ItemIndex = 0);
+//
+//    if Success then
+//    begin
+//      ShowMessage('Consulta realizada e dados inseridos com sucesso.');
+//      qryConsultaCEP.Refresh; // Atualiza o DBGrid
+//    end
+//    else
+//      ShowMessage('Falha na consulta.');
+//  finally
+//    Controller.Free;
+//  end;
+//end;
+
+//procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
+//var
+//  Controller: TCEPController;
+//  Success, IsExisting: Boolean;
+//begin
+//  inherited;
+//
+//  Controller := TCEPController.Create(dm.connViacep);
+//  try
+//    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting);
+//
+//    if IsExisting then
+//    begin
+//      if MessageDlg('CEP já existe no banco de dados. Deseja usar o endereço salvo ou consultar novamente?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+//      begin
+//        ShowMessage('Usando os dados salvos no banco de dados.');
+//      end
+//      else
+//      begin
+//        Abort;
+////        Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting);
+////        if Success then
+////          ShowMessage('Consulta realizada e dados atualizados com sucesso.');
+//      end;
+//    end
+//    else if Success then
+//      ShowMessage('Consulta realizada e dados inseridos com sucesso.')
+//    else
+//      ShowMessage('Falha na consulta do CEP.');
+//
+//    qryConsultaCEP.Refresh;
+//  finally
+//    Controller.Free;
+//  end;
+//end;
+
 procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
 var
   Controller: TCEPController;
-  Success: Boolean;
+  Success, IsExisting: Boolean;
+  ExistingID: Integer;
 begin
   inherited;
 
-  // Criando o controller e inicializando com a conexão do DataModule
   Controller := TCEPController.Create(dm.connViacep);
   try
-    // Consulta do CEP: verifica se o RadioGroup está selecionado para JSON ou XML
-    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0);
+    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting, ExistingID);
 
-    if Success then
+    if IsExisting then
     begin
-      ShowMessage('Consulta realizada e dados inseridos com sucesso.');
-      qryConsultaCEP.Refresh; // Atualiza o DBGrid
+      if MessageDlg('CEP já existe no banco de dados. Deseja usar o endereço salvo ou consultar novamente?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+      begin
+        ShowMessage('Usando os dados salvos no banco de dados.');
+
+        if ExistingID <> -1 then
+        begin
+          if not qryConsultaCEP.Locate('id', ExistingID, []) then
+            ShowMessage('Registro não encontrado no DBGrid.');
+        end;
+
+        Abort;
+      end;
     end
     else
+    if Success then
+      ShowMessage('Consulta realizada e dados inseridos com sucesso.')
+    else
       ShowMessage('Falha na consulta do CEP.');
+
+    qryConsultaCEP.Refresh;
   finally
     Controller.Free;
   end;
+end;
+
+
+
+procedure TviewBuscaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  inherited;
+  if Key = VK_RETURN then
+    actConsultarCepExecute(nil);
 end;
 
 procedure TviewBuscaCEP.FormCreate(Sender: TObject);

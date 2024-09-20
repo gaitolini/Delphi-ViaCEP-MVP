@@ -66,7 +66,7 @@ begin
   if AJSON = nil then
     raise Exception.Create('O objeto JSON está nulo.');
 
-  FCEP := AJSON.GetValue<string>('cep');
+  FCEP := AJSON.GetValue<string>('cep').Replace('-', '');
   FLogradouro := AJSON.GetValue<string>('logradouro');
   FComplemento := AJSON.GetValue<string>('complemento');
   FBairro := AJSON.GetValue<string>('bairro');
@@ -85,7 +85,7 @@ begin
   if AXML = nil then
     raise Exception.Create('O objeto XML está nulo.');
 
-  FCEP := AXML.DocumentElement.ChildNodes['cep'].Text;
+  FCEP := AXML.DocumentElement.ChildNodes['cep'].Text.Replace('-', '');
   FLogradouro := AXML.DocumentElement.ChildNodes['logradouro'].Text;
   FComplemento := AXML.DocumentElement.ChildNodes['complemento'].Text;
   FBairro := AXML.DocumentElement.ChildNodes['bairro'].Text;
@@ -104,7 +104,8 @@ begin
   FQuery.SQL.Text :=
     'INSERT INTO ceps (cep, logradouro, complemento, bairro, localidade, uf, estado, regiao, ibge, gia, ddd, siafi) ' +
     'VALUES (:cep, :logradouro, :complemento, :bairro, :localidade, :uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)';
-  FQuery.ParamByName('cep').AsString := FCEP;
+
+  FQuery.ParamByName('cep').AsString := FCEP.Replace('-', '');;
   FQuery.ParamByName('logradouro').AsString := FLogradouro;
   FQuery.ParamByName('complemento').AsString := FComplemento;
   FQuery.ParamByName('bairro').AsString := FBairro;
@@ -116,6 +117,7 @@ begin
   FQuery.ParamByName('gia').AsString := FGIA;
   FQuery.ParamByName('ddd').AsString := FDDD;
   FQuery.ParamByName('siafi').AsString := FSIAFI;
+
   FQuery.ExecSQL;
 end;
 
@@ -125,7 +127,7 @@ begin
   FQuery.ParamByName('pcep').AsString := ACEP;
   FQuery.Open;
 
-  FCEP := FQuery.FieldByName('cep').AsString;
+  FCEP := FQuery.FieldByName('cep').AsString.Replace('-', '');
   FLogradouro := FQuery.FieldByName('logradouro').AsString;
   FComplemento := FQuery.FieldByName('complemento').AsString;
   FBairro := FQuery.FieldByName('bairro').AsString;

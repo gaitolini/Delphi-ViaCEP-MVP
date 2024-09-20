@@ -108,16 +108,13 @@ var
 begin
   Parts := Input.Split([',']);
 
-  // Verifica se existem as 3 partes necessárias (UF, Cidade, Logradouro)
   if Length(Parts) <> 3 then
     raise Exception.Create('O formato para consulta por endereço é UF, Cidade, Logradouro.');
 
-  // Extrai as partes do input (UF, Cidade e Logradouro)
   UF := Parts[0].Trim;
   Cidade := Parts[1].Trim;
   Logradouro := Parts[2].Trim;
 
-  // Monta a URL final mantendo o formato fornecido pelo usuário
   Result := Format('https://viacep.com.br/ws/%s/%s/%s/%s/', [UF, Cidade, Logradouro, IfThen( TypeInfo(T) = TypeInfo(TSerializableJSON),'json','xml')]);
 end;
 

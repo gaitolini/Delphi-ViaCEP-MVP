@@ -42,64 +42,20 @@ inherited viewBuscaCEP: TviewBuscaCEP
             end
             item
               Expanded = False
-              FieldName = 'logradouro'
-              Width = 200
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'complemento'
-              Width = 100
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'bairro'
-              Width = 150
+              FieldName = 'uf'
+              Width = 49
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'localidade'
-              Width = 50
+              Width = 277
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'uf'
-              Width = 26
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'estado'
-              Width = 100
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'regiao'
-              Width = 40
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ibge'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'gia'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ddd'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'siafi'
+              FieldName = 'logradouro'
+              Width = 431
               Visible = True
             end>
         end
@@ -153,6 +109,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 1
             TextHint = 'UF, Cidade, Logradouro or CEP'
+            OnKeyDown = edtLocationKeyDown
             ExplicitHeight = 33
           end
           object btnInsert: TButton

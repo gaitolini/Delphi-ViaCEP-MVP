@@ -16,11 +16,14 @@ type
     constructor Create(AConnection: TFDConnection);
     destructor Destroy; override;
 
-    function ConsultarCEP(ACEP: string; AFormatoJSON: Boolean): Boolean; // True if successful
+    function ConsultarCEP(ACEP: string; AFormatoJSON: Boolean; var IsExisting: Boolean; out AExistingID: Integer): Boolean;
     procedure CarregarCEPDoBanco(ACEP: string);
   end;
 
 implementation
+
+uses
+  Vcl.Dialogs, System.UITypes;
 
 constructor TCEPController.Create(AConnection: TFDConnection);
 begin
@@ -37,36 +40,43 @@ begin
   inherited;
 end;
 
-function TCEPController.ConsultarCEP(ACEP: string; AFormatoJSON: Boolean): Boolean;
+function TCEPController.ConsultarCEP(ACEP: string; AFormatoJSON: Boolean; var IsExisting: Boolean; out AExistingID: Integer): Boolean;
 var
-  JSONObject: TJSONObject;
+  JSONResult: TJSONObject;
   XMLResult: IXMLDocument;
 begin
   Result := False;
+  AExistingID := -1;
+  IsExisting := FDAO.CEPExists(ACEP, AExistingID);
 
-  if AFormatoJSON then
+  if IsExisting then
   begin
-    JSONObject := FService.ConsultarCEPJSON(ACEP);
-
-    if (JSONObject <> nil) then
-    begin
-      FModel.LoadFromJSON(JSONObject);
-      Result := True;
-    end;
-
+    FModel.LoadFromDatabase(ACEP);
+    Result := True;
   end
   else
   begin
-    XMLResult := FService.ConsultarCEPXML(ACEP);
-    if XMLResult <> nil then
+    if AFormatoJSON then
     begin
-      FModel.LoadFromXML(XMLResult);
-      Result := True;
+      JSONResult := FService.ConsultarCEPJSON(ACEP);
+      if JSONResult <> nil then
+      begin
+        FModel.LoadFromJSON(JSONResult);
+        FDAO.Insert(FModel);
+        Result := True;
+      end;
+    end
+    else
+    begin
+      XMLResult := FService.ConsultarCEPXML(ACEP);
+      if XMLResult <> nil then
+      begin
+        FModel.LoadFromXML(XMLResult);
+        FDAO.Insert(FModel);
+        Result := True;
+      end;
     end;
   end;
-
-  if Result then
-    FDAO.Insert(FModel); // Persiste os dados no banco
 end;
 
 procedure TCEPController.CarregarCEPDoBanco(ACEP: string);
