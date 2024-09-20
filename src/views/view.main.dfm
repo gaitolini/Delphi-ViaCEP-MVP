@@ -16,6 +16,7 @@ inherited viewMain: TviewMain
       Width = 678
       Height = 508
       ParentColor = False
+      ExplicitTop = 24
       ExplicitWidth = 678
       ExplicitHeight = 508
       object imgWallPapper: TSkAnimatedImage
@@ -2484,18 +2485,19 @@ inherited viewMain: TviewMain
     end
     object imgMenuMain_Layout: TSkAnimatedImage
       Left = 0
-      Top = 100
+      Top = 466
       Width = 200
       Height = 50
       Cursor = crHandPoint
       Hint = 'Layout da tela'
-      Align = alTop
+      Align = alBottom
       ParentShowHint = False
       ShowHint = True
       OnClick = imgMenuMain_LayoutClick
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitTop = 100
       Data = {
         7B2276223A22352E31302E32222C226672223A36302C226970223A302C226F70
         223A3132302C2277223A3433302C2268223A3433302C226E6D223A2277697265

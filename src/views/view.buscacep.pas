@@ -17,7 +17,8 @@ uses
   Vcl.ImgList, System.Actions, Vcl.ActnList, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Vcl.Bind.Navigator, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdActns, datamodule.viacep;
+  Vcl.Bind.Navigator, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdActns, datamodule.viacep,
+  Vcl.DBActns;
 
 type
   TviewBuscaCEP = class(TviewBase)
@@ -25,12 +26,6 @@ type
     ilConsultaCEP: TImageList;
     dsConsultaCEP: TDataSource;
     qryConsultaCEP: TFDQuery;
-    LiveBindingsBindNavigateFirst1: TBindNavigateFirst;
-    LiveBindingsBindNavigatePrior1: TBindNavigatePrior;
-    LiveBindingsBindNavigateNext1: TBindNavigateNext;
-    LiveBindingsBindNavigateLast1: TBindNavigateLast;
-    LiveBindingsBindNavigateDelete1: TBindNavigateDelete;
-    LiveBindingsBindNavigateRefresh1: TBindNavigateRefresh;
     actConsultarCep: TAction;
     actSaveAsJSON: TFileSaveAs;
     actSaveAsXML: TFileSaveAs;
@@ -61,6 +56,12 @@ type
     btnNavDB_Refresh: TButton;
     btnSaveJSON: TButton;
     btnSaveAsXML: TButton;
+    DatasetFirst1: TDataSetFirst;
+    DatasetPrior1: TDataSetPrior;
+    DatasetNext1: TDataSetNext;
+    DatasetLast1: TDataSetLast;
+    DatasetDelete1: TDataSetDelete;
+    DatasetRefresh1: TDataSetRefresh;
     procedure FormCreate(Sender: TObject);
     procedure actConsultarCepExecute(Sender: TObject);
   private
