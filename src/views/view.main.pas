@@ -101,7 +101,7 @@ var
 implementation
 
 uses
-  view.layout, view.buscacep, view.endereco;
+  view.layout, view.buscacep, view.endereco, datamodule.viacep;
 
 {$R *.dfm}
 
@@ -135,6 +135,7 @@ end;
 procedure TviewMain.FormCreate(Sender: TObject);
 begin
   inherited;
+  dm.InitializeDatabase;
   SV.CloseStyle := svcCompact;
   SV.Opened := False;
   SV.Placement := svpLeft;

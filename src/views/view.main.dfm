@@ -26,8 +26,6 @@ inherited viewMain: TviewMain
         Align = alClient
         PopupMenu = pmMainMenus
         Animation.Loop = False
-        ExplicitLeft = 6
-        ExplicitTop = 19
         Data = {
           7B2276223A22352E372E36222C226672223A33302C226970223A302C226F7022
           3A3135302C2277223A3630302C2268223A3630302C226E6D223A22526F636B65
@@ -1473,8 +1471,6 @@ inherited viewMain: TviewMain
     TabOrder = 1
     OnClosing = SVClosing
     OnOpening = SVOpening
-    ExplicitLeft = -3
-    ExplicitTop = 44
     object imgMenuMain_CEP: TSkAnimatedImage
       Left = 0
       Top = 0
@@ -1489,7 +1485,6 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
-      ExplicitTop = 50
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A3131302E36393939393939393939393939392C2277223A3433302C226822
@@ -1908,7 +1903,6 @@ inherited viewMain: TviewMain
       Animation.Enabled = False
       Animation.Progress = 1.000000000000000000
       WrapMode = Place
-      ExplicitTop = 100
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A38392C2277223A3433302C2268223A3433302C226E6D223A227769726564
@@ -2502,7 +2496,6 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
-      ExplicitTop = 200
       Data = {
         7B2276223A22352E31302E32222C226672223A36302C226970223A302C226F70
         223A3132302C2277223A3433302C2268223A3433302C226E6D223A2277697265
