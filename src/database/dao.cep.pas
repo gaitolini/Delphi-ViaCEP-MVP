@@ -14,8 +14,7 @@ type
     constructor Create(AConnection: TFDConnection);
     destructor Destroy; override;
     procedure Insert(ACEPModel: TCEPModel);
-    function CEPExists(AInput: string; out AID: Integer): Boolean;
-    function CheckExistingAddresses(Enderecos: TList<TCEPModel>): TList<TCEPModel>;
+    function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
     procedure Update(ACEPModel: TCEPModel);
   end;
 
@@ -39,6 +38,7 @@ begin
   FQuery.SQL.Text :=
     'INSERT INTO ceps (cep, logradouro, complemento, bairro, localidade, uf, estado, regiao, ibge, gia, ddd, siafi) ' +
     'VALUES (:cep, :logradouro, :complemento, :bairro, :localidade, :uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)';
+
   FQuery.ParamByName('cep').AsString := ACEPModel.CEP;
   FQuery.ParamByName('logradouro').AsString := ACEPModel.Logradouro;
   FQuery.ParamByName('complemento').AsString := ACEPModel.Complemento;
@@ -54,23 +54,24 @@ begin
   FQuery.ExecSQL;
 end;
 
-function TCEPDAO.CEPExists(AInput: string; out AID: Integer): Boolean;
+function TCEPDAO.ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
 var
   Parts: TArray<string>;
   UF, Localidade, Logradouro: string;
   aInt: Integer;
+  aCEPModel: TCEPModel;
 begin
-  Result := False;
-  AID := -1;
+  Result := TList<TCEPModel>.Create;
 
-  if TryStrToInt(AInput.Replace('-', '').Trim,aInt) then
+  if TryStrToInt(aInput.Replace('-', '').Trim,aInt) then
   begin
     FQuery.SQL.Text := 'SELECT id FROM ceps WHERE cep = :cep';
-    FQuery.ParamByName('cep').AsString := AInput;
+    FQuery.ParamByName('cep').AsString := aInput;
   end
   else
   begin
-    Parts := AInput.Split([',']);
+    Parts := aInput.Split([',']);
+
     if Length(Parts) <> 3 then
       raise Exception.Create('O formato para consulta por endereço é UF, Cidade, Logradouro.');
 
@@ -78,51 +79,37 @@ begin
     Localidade := Parts[1].Trim;
     Logradouro := Parts[2].Trim;
 
-    FQuery.SQL.Text := 'SELECT id FROM ceps WHERE uf = :uf AND localidade = :localidade AND logradouro = :logradouro';
-    FQuery.ParamByName('uf').AsString := UF;
-    FQuery.ParamByName('localidade').AsString := Localidade;
-    FQuery.ParamByName('logradouro').AsString := Logradouro;
+    FQuery.SQL.Text := 'SELECT * FROM ceps WHERE UPPER(uf) = UPPER(:puf) AND LOWER(localidade) LIKE  :pLocalidade || ''%'' AND LOWER(logradouro) LIKE  :plogradouro || ''%''';
+    FQuery.ParamByName('puf').AsString := UF;
+    FQuery.ParamByName('pLocalidade').AsString := LowerCase(Localidade);
+    FQuery.ParamByName('pLogradouro').AsString := LowerCase(Logradouro);
   end;
 
   FQuery.Open;
-  if not FQuery.Eof then
+
+  while not FQuery.Eof do
   begin
-    AID := FQuery.FieldByName('id').AsInteger; // Retorna o ID do registro encontrado
-    Result := True;
+
+    aCEPModel := TCEPModel.Create(nil);
+    aCEPModel.CEP := FQuery.FieldByName('cep').AsString;
+    aCEPModel.Logradouro := FQuery.FieldByName('logradouro').AsString;
+    aCEPModel.Complemento := FQuery.FieldByName('complemento').AsString;
+    aCEPModel.Bairro := FQuery.FieldByName('bairro').AsString;
+    aCEPModel.Localidade := FQuery.FieldByName('localidade').AsString;
+    aCEPModel.UF := FQuery.FieldByName('uf').AsString;
+    aCEPModel.Estado := FQuery.FieldByName('estado').AsString;
+    aCEPModel.Regiao := FQuery.FieldByName('regiao').AsString;
+    aCEPModel.IBGE := FQuery.FieldByName('ibge').AsString;
+    aCEPModel.GIA := FQuery.FieldByName('gia').AsString;
+    aCEPModel.DDD := FQuery.FieldByName('ddd').AsString;
+    aCEPModel.SIAFI := FQuery.FieldByName('siafi').AsString;
+    Result.Add(aCEPModel);
+
+    FQuery.Next;
   end;
 
   FQuery.Close;
 end;
-
-function TCEPDAO.CheckExistingAddresses(Enderecos: TList<TCEPModel>): TList<TCEPModel>;
-var
-  Endereco: TCEPModel;
-  ExistingList: TList<TCEPModel>;
-begin
-  ExistingList := TList<TCEPModel>.Create;
-
-  try
-    for Endereco in Enderecos do
-    begin
-      // Verifica se o endereço já existe no banco de dados
-      FQuery.SQL.Text := 'SELECT id FROM ceps WHERE uf = :uf AND localidade = :localidade AND logradouro = :logradouro';
-      FQuery.ParamByName('uf').AsString := Endereco.UF;
-      FQuery.ParamByName('localidade').AsString := Endereco.Localidade;
-      FQuery.ParamByName('logradouro').AsString := Endereco.Logradouro;
-
-      FQuery.Open;
-      if not FQuery.Eof then
-        ExistingList.Add(Endereco);  // Adiciona à lista de endereços já existentes
-      FQuery.Close;
-    end;
-
-    Result := ExistingList;
-  except
-    ExistingList.Free;
-    raise;
-  end;
-end;
-
 
 procedure TCEPDAO.Update(ACEPModel: TCEPModel);
 begin
@@ -134,7 +121,6 @@ begin
     'gia = :gia, ddd = :ddd, siafi = :siafi ' +
     'WHERE cep = :cep';
 
-  // Atribui os parâmetros a partir do modelo
   FQuery.ParamByName('cep').AsString := ACEPModel.CEP;
   FQuery.ParamByName('logradouro').AsString := ACEPModel.Logradouro;
   FQuery.ParamByName('complemento').AsString := ACEPModel.Complemento;
@@ -148,7 +134,6 @@ begin
   FQuery.ParamByName('ddd').AsString := ACEPModel.DDD;
   FQuery.ParamByName('siafi').AsString := ACEPModel.SIAFI;
 
-  // Executa a consulta SQL de atualização
   FQuery.ExecSQL;
 end;
 

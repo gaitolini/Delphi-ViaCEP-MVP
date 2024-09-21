@@ -9,6 +9,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
     ExplicitHeight = 605
     inherited sbxContent: TScrollBox
       Height = 541
+      ExplicitTop = 30
       ExplicitHeight = 541
       object pnl1: TPanel
         Left = 0
@@ -49,13 +50,24 @@ inherited viewBuscaCEP: TviewBuscaCEP
             item
               Expanded = False
               FieldName = 'localidade'
-              Width = 277
+              Width = 241
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'logradouro'
-              Width = 431
+              Width = 219
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'complemento'
+              Width = 98
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'bairro'
               Visible = True
             end>
         end

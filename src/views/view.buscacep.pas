@@ -21,14 +21,10 @@ uses
   Vcl.DBActns, System.Generics.Collections, System.StrUtils;
 
 const
-  cnstMsgPluralDuplicidade = 'Alguns endereços já existem no banco de dados. Deseja atualizar todos?';
-  cnstMsgSigularDupicidade = 'O endereço já existe no banco de dados. Deseja atualizar?';
+  cnstMsgPluralDuplicidade = 'Há endereços enconstrados na base. Deseja efetuar uma nova consulta atualizando as informações dos endereços existentes?';
+  cnstMsgSigularDupicidade = 'O endereço encontrado na base! Deseja efetuar uma nova consulta atualizando as informações do endereço existente?';
   cnstMsgPluralConfirmaUpdate = 'Todos os endereços existentes foram atualizados.';
   cnstMsgSingularConfirmaUpdate = 'O endereço existente foi atualizado.';
-//  cnstMsgPluralConfirmaInsert = 'Todos os endereços foram inseridos no banco de dados.';
-//  cnstMsgSingularConfirmaInsert = 'O endereços foi inserido no banco de dados.';
-
-
 
 type
   TviewBuscaCEP = class(TviewBase)
@@ -92,115 +88,6 @@ uses
 
 {$R *.dfm}
 
-//procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
-//var
-//  Controller: TCEPController;
-//  Success: Boolean;
-//  InputText: string;
-//  aInteger: Integer;
-//begin
-//  inherited;
-//
-//  // Criando o controller e inicializando com a conexão do DataModule
-//  Controller := TCEPController.Create(dm.connViacep);
-//  try
-//    InputText := edtLocation.Text;
-//
-//    if Length(InputText) < 3 then
-//    begin
-//      ShowMessage('O CEP ou endereço informado deve conter pelo menos 3 caracteres.');
-//      Exit;
-//    end;
-//
-//    Success := Controller.ConsultarCEP(InputText, rgTipo.ItemIndex = 0);
-//
-//    if Success then
-//    begin
-//      ShowMessage('Consulta realizada e dados inseridos com sucesso.');
-//      qryConsultaCEP.Refresh; // Atualiza o DBGrid
-//    end
-//    else
-//      ShowMessage('Falha na consulta.');
-//  finally
-//    Controller.Free;
-//  end;
-//end;
-
-//procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
-//var
-//  Controller: TCEPController;
-//  Success, IsExisting: Boolean;
-//begin
-//  inherited;
-//
-//  Controller := TCEPController.Create(dm.connViacep);
-//  try
-//    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting);
-//
-//    if IsExisting then
-//    begin
-//      if MessageDlg('CEP já existe no banco de dados. Deseja usar o endereço salvo ou consultar novamente?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-//      begin
-//        ShowMessage('Usando os dados salvos no banco de dados.');
-//      end
-//      else
-//      begin
-//        Abort;
-////        Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting);
-////        if Success then
-////          ShowMessage('Consulta realizada e dados atualizados com sucesso.');
-//      end;
-//    end
-//    else if Success then
-//      ShowMessage('Consulta realizada e dados inseridos com sucesso.')
-//    else
-//      ShowMessage('Falha na consulta do CEP.');
-//
-//    qryConsultaCEP.Refresh;
-//  finally
-//    Controller.Free;
-//  end;
-//end;
-
-//procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
-//var
-//  Controller: TCEPController;
-//  Success, IsExisting: Boolean;
-//  ExistingID: Integer;
-//begin
-//  inherited;
-//
-//  Controller := TCEPController.Create(dm.connViacep);
-//  try
-//    Success := Controller.ConsultarCEP(edtLocation.Text, rgTipo.ItemIndex = 0, IsExisting, ExistingID);
-//
-//    if IsExisting then
-//    begin
-//      if MessageDlg('CEP já existe no banco de dados. Deseja usar o endereço salvo ou consultar novamente?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-//      begin
-//        ShowMessage('Usando os dados salvos no banco de dados.');
-//
-//        if ExistingID <> -1 then
-//        begin
-//          if not qryConsultaCEP.Locate('id', ExistingID, []) then
-//            ShowMessage('Registro não encontrado no DBGrid.');
-//        end;
-//
-//        Abort;
-//      end;
-//    end
-//    else
-//    if Success then
-//      ShowMessage('Consulta realizada e dados inseridos com sucesso.')
-//    else
-//      ShowMessage('Falha na consulta do CEP.');
-//
-//    qryConsultaCEP.Refresh;
-//  finally
-//    Controller.Free;
-//  end;
-//end;
-
 procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
 var
   Controller: TCEPController;
@@ -210,63 +97,59 @@ var
 begin
   inherited;
 
+  if Trim(edtLocation.Text) = EmptyStr then
+  begin
+    ShowMessage('Informe um valor válido!');
+    Abort;
+  end;
+
+
   Controller := TCEPController.Create(dm.connViacep);
-  Enderecos := TList<TCEPModel>.Create;
-  ExistingEnderecos := TList<TCEPModel>.Create;
+  ExistingEnderecos := Controller.ConsultaCEP_DB(edtLocation.Text);
 
   try
-    Enderecos := Controller.ConsultarEnderecoLista(edtLocation.Text, rgTipo.ItemIndex = 0, ExistingEnderecos);
-
-    if ExistingEnderecos.Count > 0 then
+    if (ExistingEnderecos.Count > 0) then
     begin
-
       Option := MessageDlg(IfThen(ExistingEnderecos.Count=1,cnstMsgSigularDupicidade, cnstMsgPluralDuplicidade), mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+
 
       case Option of
         mrYes:
-          begin
-            for Endereco in ExistingEnderecos do
-              Controller.UpdateEndereco(Endereco);
+        begin
+          Enderecos := Controller.ConsultarCEP_WS(edtLocation.Text, rgTipo.ItemIndex = 0);
 
-            ShowMessage(IfThen(ExistingEnderecos.Count=1, cnstMsgSingularConfirmaUpdate, cnstMsgSingularConfirmaUpdate));
+          for Endereco in Enderecos do
+          begin
+            if ExistingEnderecos.BinarySearch(Endereco, ExistingID) then
+              Controller.UpdateEndereco(Endereco)
+            else
+              Controller.InsertEndereco(Endereco);
           end;
+
+          ShowMessage(IfThen(ExistingEnderecos.Count=1, cnstMsgSingularConfirmaUpdate, cnstMsgSingularConfirmaUpdate));
+        end;
 
         mrNo:
-          begin
-            for Endereco in Enderecos do
-            begin
-              if not Controller.CEPExists(Endereco.CEP, ExistingID) then
-                Controller.InsertEndereco(Endereco)
-              else
-                Controller.UpdateEndereco(Endereco);
-            end;
-
-//            ShowMessage('Endereços novos foram inseridos. Endereços existentes foram atualizados.');
-          end;
-
-        mrCancel:
+        begin
           Abort;
+        end;
       end;
+
     end
     else
     begin
+      Enderecos := Controller.ConsultarCEP_WS(edtLocation.Text, rgTipo.ItemIndex = 0);
       for Endereco in Enderecos do
-        Controller.InsertEndereco(Endereco);
-
-//      ShowMessage(IfThen(Enderecos.Count = 1, ,));
+      begin
+        Controller.InsertEndereco(Endereco)
+      end;
     end;
-
-    if ExistingID <> -1 then
-    begin
-      qryConsultaCEP.Locate('id', ExistingID, [])
-    end;
-
 
     qryConsultaCEP.Refresh;
   finally
-    Enderecos.Free;
-    ExistingEnderecos.Free;
-    Controller.Free;
+    FreeAndNil(Enderecos);
+    FreeAndNil(Controller);
+    FreeAndNil(ExistingEnderecos);
   end;
 end;
 
