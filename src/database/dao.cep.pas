@@ -3,15 +3,16 @@ unit dao.cep;
 interface
 
 uses
-  model.cep, FireDAC.Comp.Client, Data.DB, System.SysUtils, System.Generics.Collections;
+  model.cep, Uni, Data.DB, System.SysUtils, System.Generics.Collections, utils.str;
 
 type
   TCEPDAO = class
   private
-    FConnection: TFDConnection;
-    FQuery: TFDQuery;
+    FConnection: TUniConnection;
+    FQuery: TUniQuery;
+    procedure AtivaUnaccent;
   public
-    constructor Create(AConnection: TFDConnection);
+    constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
     procedure Insert(ACEPModel: TCEPModel);
     function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
@@ -20,11 +21,12 @@ type
 
 implementation
 
-constructor TCEPDAO.Create(AConnection: TFDConnection);
+constructor TCEPDAO.Create(AConnection: TUniConnection);
 begin
   FConnection := AConnection;
-  FQuery := TFDQuery.Create(nil);
+  FQuery := TUniQuery.Create(nil);
   FQuery.Connection := FConnection;
+  AtivaUnaccent;
 end;
 
 destructor TCEPDAO.Destroy;
@@ -44,14 +46,35 @@ begin
   FQuery.ParamByName('complemento').AsString := ACEPModel.Complemento;
   FQuery.ParamByName('bairro').AsString := ACEPModel.Bairro;
   FQuery.ParamByName('localidade').AsString := ACEPModel.Localidade;
-  FQuery.ParamByName('uf').AsString := ACEPModel.UF;
+  FQuery.ParamByName('uf').AsString := UpperCase(ACEPModel.UF);
   FQuery.ParamByName('estado').AsString := ACEPModel.Estado;
   FQuery.ParamByName('regiao').AsString := ACEPModel.Regiao;
-  FQuery.ParamByName('ibge').AsString := ACEPModel.IBGE;
-  FQuery.ParamByName('gia').AsString := ACEPModel.GIA;
-  FQuery.ParamByName('ddd').AsString := ACEPModel.DDD;
-  FQuery.ParamByName('siafi').AsString := ACEPModel.SIAFI;
+  FQuery.ParamByName('ibge').AsInteger := ACEPModel.IBGE;
+  FQuery.ParamByName('gia').AsInteger := ACEPModel.GIA;
+  FQuery.ParamByName('ddd').AsInteger := ACEPModel.DDD;
+  FQuery.ParamByName('siafi').AsInteger := ACEPModel.SIAFI;
   FQuery.ExecSQL;
+end;
+
+procedure TCEPDAO.AtivaUnaccent;
+begin
+  FQuery.SQL.Clear;
+  FQuery.SQL.Text := 'SELECT extname FROM pg_extension WHERE extname = :extname';
+  FQuery.ParamByName('extname').AsString := 'unaccent';
+  FQuery.Open;
+
+  if FQuery.IsEmpty then
+  begin
+    FQuery.Close;
+    FQuery.SQL.Clear;
+    FQuery.SQL.Text := 'CREATE EXTENSION IF NOT EXISTS unaccent';
+    try
+      FQuery.ExecSQL;
+    except
+      on E: Exception do
+        raise Exception.Create('Erro ao criar a extensão unaccent: ' + E.Message);
+    end;
+  end;
 end;
 
 function TCEPDAO.ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
@@ -65,7 +88,7 @@ begin
 
   if TryStrToInt(aInput.Replace('-', '').Trim,aInt) then
   begin
-    FQuery.SQL.Text := 'SELECT id FROM ceps WHERE cep = :cep';
+    FQuery.SQL.Text := 'SELECT * FROM ceps WHERE cep = :cep';
     FQuery.ParamByName('cep').AsString := aInput;
   end
   else
@@ -79,7 +102,7 @@ begin
     Localidade := Parts[1].Trim;
     Logradouro := Parts[2].Trim;
 
-    FQuery.SQL.Text := 'SELECT * FROM ceps WHERE UPPER(uf) = UPPER(:puf) AND LOWER(localidade) LIKE  :pLocalidade || ''%'' AND LOWER(logradouro) LIKE  :plogradouro || ''%''';
+    FQuery.SQL.Text := 'SELECT * FROM ceps WHERE UPPER(uf) = UPPER(:puf) AND unaccent(LOWER(localidade)) LIKE ''%'' || unaccent(LOWER(TRIM(:pLocalidade))) || ''%'' AND unaccent(LOWER(logradouro)) LIKE ''%'' || unaccent(LOWER(TRIM(:plogradouro))) ||  ''%''';
     FQuery.ParamByName('puf').AsString := UF;
     FQuery.ParamByName('pLocalidade').AsString := LowerCase(Localidade);
     FQuery.ParamByName('pLogradouro').AsString := LowerCase(Logradouro);
@@ -99,10 +122,10 @@ begin
     aCEPModel.UF := FQuery.FieldByName('uf').AsString;
     aCEPModel.Estado := FQuery.FieldByName('estado').AsString;
     aCEPModel.Regiao := FQuery.FieldByName('regiao').AsString;
-    aCEPModel.IBGE := FQuery.FieldByName('ibge').AsString;
-    aCEPModel.GIA := FQuery.FieldByName('gia').AsString;
-    aCEPModel.DDD := FQuery.FieldByName('ddd').AsString;
-    aCEPModel.SIAFI := FQuery.FieldByName('siafi').AsString;
+    aCEPModel.IBGE := FQuery.FieldByName('ibge').AsInteger;
+    aCEPModel.GIA := FQuery.FieldByName('gia').AsInteger;
+    aCEPModel.DDD := FQuery.FieldByName('ddd').AsInteger;
+    aCEPModel.SIAFI := FQuery.FieldByName('siafi').AsInteger;
     Result.Add(aCEPModel);
 
     FQuery.Next;
@@ -126,13 +149,13 @@ begin
   FQuery.ParamByName('complemento').AsString := ACEPModel.Complemento;
   FQuery.ParamByName('bairro').AsString := ACEPModel.Bairro;
   FQuery.ParamByName('localidade').AsString := ACEPModel.Localidade;
-  FQuery.ParamByName('uf').AsString := ACEPModel.UF;
+  FQuery.ParamByName('uf').AsString := UpperCase(ACEPModel.UF);
   FQuery.ParamByName('estado').AsString := ACEPModel.Estado;
   FQuery.ParamByName('regiao').AsString := ACEPModel.Regiao;
-  FQuery.ParamByName('ibge').AsString := ACEPModel.IBGE;
-  FQuery.ParamByName('gia').AsString := ACEPModel.GIA;
-  FQuery.ParamByName('ddd').AsString := ACEPModel.DDD;
-  FQuery.ParamByName('siafi').AsString := ACEPModel.SIAFI;
+  FQuery.ParamByName('ibge').AsInteger := ACEPModel.IBGE;
+  FQuery.ParamByName('gia').AsInteger := ACEPModel.GIA;
+  FQuery.ParamByName('ddd').AsInteger := ACEPModel.DDD;
+  FQuery.ParamByName('siafi').AsInteger := ACEPModel.SIAFI;
 
   FQuery.ExecSQL;
 end;

@@ -3,7 +3,7 @@ unit model.cep;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Comp.Client, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs;
+  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs;
 
 type
   TCEPModel = class
@@ -16,14 +16,14 @@ type
     FUF: string;
     FEstado: string;
     FRegiao: string;
-    FIBGE: string;
-    FGIA: string;
-    FDDD: string;
-    FSIAFI: string;
-    FConnection: TFDConnection;
-    FQuery: TFDQuery;
+    FIBGE: Integer;
+    FGIA: Integer;
+    FDDD: Integer;
+    FSIAFI: Integer;
+    FConnection: TUniConnection;
+    FQuery: TUniQuery;
   public
-    constructor Create(AConnection: TFDConnection);
+    constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
 
     procedure LoadFromJSON(AJSON: TJSONObject);
@@ -39,18 +39,18 @@ type
     property UF: string read FUF write FUF;
     property Estado: string read FEstado write FEstado;
     property Regiao: string read FRegiao write FRegiao;
-    property IBGE: string read FIBGE write FIBGE;
-    property GIA: string read FGIA write FGIA;
-    property DDD: string read FDDD write FDDD;
-    property SIAFI: string read FSIAFI write FSIAFI;
+    property IBGE: Integer read FIBGE write FIBGE;
+    property GIA: Integer read FGIA write FGIA;
+    property DDD: Integer read FDDD write FDDD;
+    property SIAFI: Integer read FSIAFI write FSIAFI;
   end;
 
 implementation
 
-constructor TCEPModel.Create(AConnection: TFDConnection);
+constructor TCEPModel.Create(AConnection: TUniConnection);
 begin
   FConnection := AConnection;
-  FQuery := TFDQuery.Create(nil);
+  FQuery := TUniQuery.Create(nil);
   FQuery.Connection := FConnection;
 end;
 
@@ -74,10 +74,10 @@ begin
   FUF := AJSON.GetValue<string>('uf');
   FEstado := AJSON.GetValue<string>('estado');
   FRegiao := AJSON.GetValue<string>('regiao');
-  FIBGE := AJSON.GetValue<string>('ibge');
-  FGIA := AJSON.GetValue<string>('gia');
-  FDDD := AJSON.GetValue<string>('ddd');
-  FSIAFI := AJSON.GetValue<string>('siafi');
+  FIBGE := StrToIntDef(AJSON.GetValue<string>('ibge'),0);
+  FGIA := StrToIntDef(AJSON.GetValue<string>('gia'),0);
+  FDDD := StrToIntDef(AJSON.GetValue<string>('ddd'),0);
+  FSIAFI := StrToIntDef(AJSON.GetValue<string>('siafi'),0);
 end;
 
 procedure TCEPModel.LoadFromXML(AXMLNode: IXMLNode);
@@ -114,10 +114,10 @@ begin
   FQuery.ParamByName('uf').AsString := FUF;
   FQuery.ParamByName('estado').AsString := FEstado;
   FQuery.ParamByName('regiao').AsString := FRegiao;
-  FQuery.ParamByName('ibge').AsString := FIBGE;
-  FQuery.ParamByName('gia').AsString := FGIA;
-  FQuery.ParamByName('ddd').AsString := FDDD;
-  FQuery.ParamByName('siafi').AsString := FSIAFI;
+  FQuery.ParamByName('ibge').AsInteger := FIBGE;
+  FQuery.ParamByName('gia').AsInteger := FGIA;
+  FQuery.ParamByName('ddd').AsInteger := FDDD;
+  FQuery.ParamByName('siafi').AsInteger := FSIAFI;
 
   FQuery.ExecSQL;
 end;
@@ -136,10 +136,10 @@ begin
   FUF := FQuery.FieldByName('uf').AsString;
   FEstado := FQuery.FieldByName('estado').AsString;
   FRegiao := FQuery.FieldByName('regiao').AsString;
-  FIBGE := FQuery.FieldByName('ibge').AsString;
-  FGIA := FQuery.FieldByName('gia').AsString;
-  FDDD := FQuery.FieldByName('ddd').AsString;
-  FSIAFI := FQuery.FieldByName('siafi').AsString;
+  FIBGE := FQuery.FieldByName('ibge').AsInteger;
+  FGIA := FQuery.FieldByName('gia').AsInteger;
+  FDDD := FQuery.FieldByName('ddd').AsInteger;
+  FSIAFI := FQuery.FieldByName('siafi').AsInteger;
 end;
 
 end.

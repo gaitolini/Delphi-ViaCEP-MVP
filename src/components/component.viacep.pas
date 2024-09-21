@@ -161,27 +161,32 @@ begin
     StatusCode := LResponse.StatusCode;
     ResponseContent := LResponse.ContentAsString.Trim.Replace(#13, '').Replace(#10, '');
 
-    if LResponse.StatusCode = 200 then
+    if StatusCode = 200 then
     begin
+      // Verifica se é JSON ou XML
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
       begin
         JSONResult := TJSONObject.ParseJSONValue(ResponseContent);
 
         if Assigned(JSONResult) then
         begin
-          if JSONResult is TJSONArray then
+          if JSONResult is TJSONObject then
           begin
-            JSONArray := TJSONArray(JSONResult);
-          end
-          else if JSONResult is TJSONObject then
-          begin
-            JSONArray := TJSONArray.Create;
-            JSONArray.AddElement(TJSONObject(JSONResult.Clone as TJSONValue)); // Adiciona o objeto ao array
-          end
-          else
-            raise Exception.Create('Erro ao parsear o retorno JSON.');
+            JSONObject := TJSONObject(JSONResult);
 
-          Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
+            if JSONObject.GetValue('erro') <> nil then
+            begin
+              Result := T(TSerializableJSON.Create(TJSONObject.Create
+                .AddPair('erro', 'true')
+                .AddPair('status', StatusCode.ToString)));
+            end
+            else
+            begin
+              JSONArray := TJSONArray.Create;
+              JSONArray.AddElement(TJSONObject(JSONResult.Clone as TJSONValue));
+              Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
+            end;
+          end;
         end
         else
           raise Exception.Create('Erro ao parsear o retorno JSON.');
@@ -192,7 +197,7 @@ begin
         XMLResult.LoadFromXML(ResponseContent);
         XMLNodes := XMLResult.DocumentElement.ChildNodes;
 
-        if XMLNodes.Count > 1 then
+        if XMLResult.DocumentElement.ChildNodes.FindNode('erro') <> nil then
         begin
           Result := T(TSerializableXML.Create(XMLResult));
         end
@@ -206,11 +211,15 @@ begin
     begin
       Erro := True;
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
-        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+      begin
+        Result := T(TSerializableJSON.Create(TJSONObject.Create
+          .AddPair('erro', 'true')
+          .AddPair('status', StatusCode.ToString)));
+      end
       else
       begin
         XMLResult := TXMLDocument.Create(nil);
-        XMLResult.LoadFromXML('<root></root>');
+        XMLResult.LoadFromXML(Format('<root><erro>true</erro><status>%d</status></root>', [StatusCode]));
         Result := T(TSerializableXML.Create(XMLResult));
       end;
     end;
@@ -220,11 +229,13 @@ begin
       Erro := True;
       ResponseContent := E.Message;
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
-        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+        Result := T(TSerializableJSON.Create(TJSONObject.Create
+          .AddPair('erro', 'true')
+          .AddPair('status', StatusCode.ToString)))
       else
       begin
         XMLResult := TXMLDocument.Create(nil);
-        XMLResult.LoadFromXML('<root></root>');
+        XMLResult.LoadFromXML(Format('<root><erro>true</erro><status>%d</status></root>', [StatusCode]));
         Result := T(TSerializableXML.Create(XMLResult));
       end;
     end;
@@ -232,6 +243,7 @@ begin
 
   DoResponse(ResponseContent, StatusCode, Erro);
 end;
+
 
 constructor TSerializableJSON.Create(AJSON: TJSONObject);
 begin

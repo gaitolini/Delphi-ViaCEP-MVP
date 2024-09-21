@@ -12,7 +12,8 @@ uses
   controller.cep in '..\src\controllers\controller.cep.pas',
   service.viacep in '..\src\services\service.viacep.pas',
   datamodule.viacep in '..\src\database\datamodule.viacep.pas' {dm: TDataModule},
-  dao.cep in '..\src\database\dao.cep.pas';
+  dao.cep in '..\src\database\dao.cep.pas',
+  utils.str in '..\src\utils\utils.str.pas';
 
 {$R *.res}
 

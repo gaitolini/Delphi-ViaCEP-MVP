@@ -3,19 +3,17 @@ unit datamodule.viacep;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
-  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
-  FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs, FireDAC.VCLUI.Wait, Data.DB,
-  FireDAC.Comp.Client, FireDAC.Comp.UI, FireDAC.Comp.ScriptCommands,
-  FireDAC.Stan.Util, FireDAC.Comp.Script;
+  System.SysUtils, System.Classes, DAScript, UniScript, DADump, UniDump,
+  UniProvider, PostgreSQLUniProvider, DBAccess, Uni, Data.DB;
 
 type
   Tdm = class(TDataModule)
-    connViacep: TFDConnection;
-    waitViacep: TFDGUIxWaitCursor;
-    driverViacep: TFDPhysSQLiteDriverLink;
-    scriptViacep: TFDScript;
+    conViacep: TUniConnection;
+    transcViacep: TUniTransaction;
+    driverPGViacep: TPostgreSQLUniProvider;
+    dmpViacep: TUniDump;
+    scrptDDL: TUniScript;
+    scrptDML: TUniScript;
   private
     { Private declarations }
     procedure CreateDatabaseAndTables;
@@ -37,19 +35,22 @@ implementation
 
 procedure Tdm.CreateDatabaseAndTables;
 begin
-  try
-    scriptViacep.ExecuteAll;
-  except
-//    on E: Exception do
-//      raise Exception.Create('Erro ao criar a tabela: ' + E.Message);
-  end;
+  //
 end;
 
 procedure Tdm.InitializeDatabase;
 begin
-  connViacep.Connected := False;
-  connViacep.Connected := True;
-  CreateDatabaseAndTables;
+
+  conViacep.Disconnect;
+  conViacep.ProviderName := 'PostgreSQL';
+  conViacep.Server := 'localhost';
+  conViacep.Database := 'viacepdb';
+  conViacep.Username := 'postgres';
+  conViacep.Password := '04060811';
+  conViacep.Port := 5432;
+  conViacep.Connect;
 end;
 
 end.
+
+

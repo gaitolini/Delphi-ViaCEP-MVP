@@ -133,6 +133,7 @@
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="..\src\database\dao.cep.pas"/>
+        <DCCReference Include="..\src\utils\utils.str.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

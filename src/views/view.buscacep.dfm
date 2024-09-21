@@ -1,5 +1,5 @@
 inherited viewBuscaCEP: TviewBuscaCEP
-  Caption = 'viewBuscaCEP'
+  Caption = 'Consulta CEP'
   ClientHeight = 605
   ExplicitHeight = 644
   PixelsPerInch = 96
@@ -25,15 +25,16 @@ inherited viewBuscaCEP: TviewBuscaCEP
           Left = 4
           Top = 55
           Width = 870
-          Height = 461
+          Height = 442
           Align = alClient
-          DataSource = dsConsultaCEP
+          DataSource = dsViacep
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -12
           TitleFont.Name = 'Segoe UI'
           TitleFont.Style = []
+          OnTitleClick = dbgEnderecoTitleClick
           Columns = <
             item
               Expanded = False
@@ -268,6 +269,28 @@ inherited viewBuscaCEP: TviewBuscaCEP
             TabOrder = 10
           end
         end
+        object statConsultaCEP: TStatusBar
+          Left = 1
+          Top = 500
+          Width = 876
+          Height = 19
+          Panels = <
+            item
+              Text = 'Quantidade de de registros'
+              Width = 150
+            end
+            item
+              Alignment = taRightJustify
+              Text = '0000000000000'
+              Width = 100
+            end
+            item
+              Width = 50
+            end>
+          ExplicitLeft = 536
+          ExplicitTop = 480
+          ExplicitWidth = 0
+        end
       end
     end
     inherited pnlTip: TPanel
@@ -278,7 +301,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
       inherited lblTitle: TSkLabel
         Words = <
           item
-            Caption = 'Buscar CEP'
+            Caption = 'Consulta CEP'
             FontColor = claAliceblue
             StyledSettings = [Family, Size, Style]
           end>
@@ -313,42 +336,42 @@ inherited viewBuscaCEP: TviewBuscaCEP
       Hint = 'First'
       ImageIndex = 0
       ShortCut = 16454
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetPrior1: TDataSetPrior
       Category = 'Dataset'
       Hint = 'Prior'
       ImageIndex = 1
       ShortCut = 16464
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetNext1: TDataSetNext
       Category = 'Dataset'
       Hint = 'Next'
       ImageIndex = 2
       ShortCut = 16462
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetLast1: TDataSetLast
       Category = 'Dataset'
       Hint = 'Last'
       ImageIndex = 3
       ShortCut = 16460
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetDelete1: TDataSetDelete
       Category = 'Dataset'
       Hint = 'Delete'
       ImageIndex = 4
       ShortCut = 16452
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetRefresh1: TDataSetRefresh
       Category = 'Dataset'
       Hint = 'Refresh'
       ImageIndex = 5
       ShortCut = 16466
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
   end
   object ilConsultaCEP: TImageList
@@ -890,79 +913,104 @@ inherited viewBuscaCEP: TviewBuscaCEP
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000000000000000
       000000000000}
   end
-  object dsConsultaCEP: TDataSource
-    DataSet = qryConsultaCEP
+  object dsViacep: TUniDataSource
+    DataSet = qryViacep
+    OnDataChange = dsViacepDataChange
     Left = 664
-    Top = 174
+    Top = 160
   end
-  object qryConsultaCEP: TFDQuery
-    Connection = dm.connViacep
+  object qryViacep: TUniQuery
+    SQLInsert.Strings = (
+      'INSERT INTO ceps'
+      
+        '  (id, cep, logradouro, complemento, bairro, localidade, uf, est' +
+        'ado, regiao, ibge, gia, ddd, siafi)'
+      'VALUES'
+      
+        '  (:id, :cep, :logradouro, :complemento, :bairro, :localidade, :' +
+        'uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)')
+    SQLDelete.Strings = (
+      'DELETE FROM ceps'
+      'WHERE'
+      '  id = :Old_id')
+    SQLUpdate.Strings = (
+      'UPDATE ceps'
+      'SET'
+      
+        '  id = :id, cep = :cep, logradouro = :logradouro, complemento = ' +
+        ':complemento, bairro = :bairro, localidade = :localidade, uf = :' +
+        'uf, estado = :estado, regiao = :regiao, ibge = :ibge, gia = :gia' +
+        ', ddd = :ddd, siafi = :siafi'
+      'WHERE'
+      '  id = :Old_id')
+    SQLLock.Strings = (
+      'SELECT * FROM ceps'
+      'WHERE'
+      '  id = :Old_id'
+      'FOR UPDATE NOWAIT')
+    SQLRefresh.Strings = (
+      
+        'SELECT id, cep, logradouro, complemento, bairro, localidade, uf,' +
+        ' estado, regiao, ibge, gia, ddd, siafi FROM ceps'
+      'WHERE'
+      '  id = :id')
+    SQLRecCount.Strings = (
+      'SELECT count(*) FROM ('
+      'SELECT * FROM ceps'
+      ''
+      ') t')
+    Connection = dm.conViacep
     SQL.Strings = (
-      'SELECT * FROM ceps WHERE cep')
+      'SELECT * FROM ceps')
     Left = 760
-    Top = 174
-    object fdtncfldConsultaCEPid: TFDAutoIncField
+    Top = 176
+    object qryViacepid: TIntegerField
       FieldName = 'id'
-      Origin = 'id'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
     end
-    object strngfldConsultaCEPcep: TStringField
+    object strngfldViacepcep: TStringField
       FieldName = 'cep'
-      Origin = 'cep'
       Required = True
-      Size = 32767
+      Size = 9
     end
-    object strngfldConsultaCEPlogradouro: TStringField
+    object strngfldViaceplogradouro: TStringField
       FieldName = 'logradouro'
-      Origin = 'logradouro'
       Size = 200
     end
-    object strngfldConsultaCEPcomplemento: TStringField
+    object strngfldViacepcomplemento: TStringField
       FieldName = 'complemento'
-      Origin = 'complemento'
       Size = 50
     end
-    object strngfldConsultaCEPbairro: TStringField
+    object strngfldViacepbairro: TStringField
       FieldName = 'bairro'
-      Origin = 'bairro'
       Size = 200
     end
-    object strngfldConsultaCEPlocalidade: TStringField
+    object strngfldViaceplocalidade: TStringField
       FieldName = 'localidade'
-      Origin = 'localidade'
       Size = 100
     end
-    object strngfldConsultaCEPuf: TStringField
+    object strngfldViacepuf: TStringField
       FieldName = 'uf'
-      Origin = 'uf'
       Size = 2
     end
-    object strngfldConsultaCEPestado: TStringField
+    object strngfldViacepestado: TStringField
       FieldName = 'estado'
-      Origin = 'estado'
       Size = 150
     end
-    object strngfldConsultaCEPregiao: TStringField
+    object strngfldViacepregiao: TStringField
       FieldName = 'regiao'
-      Origin = 'regiao'
       Size = 150
     end
-    object qryConsultaCEPibge: TIntegerField
+    object qryViacepibge: TIntegerField
       FieldName = 'ibge'
-      Origin = 'ibge'
     end
-    object qryConsultaCEPgia: TIntegerField
+    object qryViacepgia: TIntegerField
       FieldName = 'gia'
-      Origin = 'gia'
     end
-    object qryConsultaCEPddd: TIntegerField
+    object qryViacepddd: TIntegerField
       FieldName = 'ddd'
-      Origin = 'ddd'
     end
-    object qryConsultaCEPsiafi: TIntegerField
+    object qryViacepsiafi: TIntegerField
       FieldName = 'siafi'
-      Origin = 'siafi'
     end
   end
 end
