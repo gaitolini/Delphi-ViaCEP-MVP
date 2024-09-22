@@ -4,15 +4,25 @@ interface
 
 uses
   System.SysUtils, model.cep, service.viacep, dao.cep, datamodule.viacep, System.JSON,
-  Xml.XMLDoc, Xml.XMLIntf, System.Generics.Collections, Uni, Data.DB;
+  Xml.XMLDoc, Xml.XMLIntf, System.Generics.Collections, Uni, Data.DB, System.Variants;
 
 type
+  TFormato = (tfJSON, tfXML);
+  TValidaCEP = reference to function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>): Boolean;
+
+  TErroAPI = record
+    StatusCode: Integer;
+    Msg: string;
+    HasError: Boolean;
+  end;
+
   TCEPController = class
   private
     FModel: TCEPModel;
     FService: TViaCEPService;
     FDAO: TCEPDAO;
     function GetDAO: TCEPDAO;
+    function ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean; out Erro: TErroAPI): TList<TCEPModel>;
   public
     constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
@@ -20,11 +30,10 @@ type
     procedure InsertEndereco(Endereco: TCEPModel);
     procedure UpdateEndereco(Endereco: TCEPModel);
     function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
-    function ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean): TList<TCEPModel>; overload;
-//    function ConsultarCEP_WS(const aEnderecoList: TList<TCEPModel>): TList<TCEPModel>; overload;
+    procedure ConsultaCEP(const aInput: string; aFormato: TFormato; ValidaCEP: TValidaCEP; out Erro: TErroAPI);
     procedure CarregarCEPDoBanco(ACEP: string);
-
     property DAO: TCEPDAO read GetDAO;
+
   end;
 
 implementation
@@ -67,7 +76,67 @@ begin
   FDAO.Update(Endereco);
 end;
 
-function TCEPController.ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean): TList<TCEPModel>;
+procedure TCEPController.ConsultaCEP(const aInput: string; aFormato: TFormato; ValidaCEP: TValidaCEP; out Erro: TErroAPI);
+var
+  EnderecoList, ExistEnderecoList: TList<TCEPModel>;
+  Endereco1, Endereco2: TCEPModel;
+  Encontrou: Boolean;
+begin
+  Erro.HasError := False;
+
+  try
+    ExistEnderecoList := ConsultaCEP_DB(aInput);
+
+    if ExistEnderecoList.Count > 0 then
+    begin
+      if not ValidaCEP('CEP já existente. Deseja atualizar os endereços?', ExistEnderecoList, nil) then
+      begin
+        Exit;
+      end;
+
+      EnderecoList := ConsultarCEP_WS(aInput, aFormato = tfJSON, Erro);
+      if Erro.HasError then
+        Exit;
+
+      for Endereco1 in EnderecoList do
+      begin
+        Encontrou := False;
+        for Endereco2 in ExistEnderecoList do
+        begin
+          if Endereco1.CEP = Endereco2.CEP then
+          begin
+            UpdateEndereco(Endereco1);
+            Encontrou := True;
+            Break;
+          end;
+        end;
+
+        if not Encontrou then
+          InsertEndereco(Endereco1);
+      end;
+    end
+    else
+    begin
+      EnderecoList := ConsultarCEP_WS(aInput, aFormato = tfJSON, Erro);
+      if Erro.HasError then
+        Exit;
+
+      if not ValidaCEP('Nenhum CEP encontrado. Deseja inserir os endereços retornados?', nil, EnderecoList) then
+      begin
+        Exit;
+      end;
+
+      for Endereco1 in EnderecoList do
+        InsertEndereco(Endereco1);
+    end;
+  finally
+    FreeAndNil(ExistEnderecoList);
+    FreeAndNil(EnderecoList);
+  end;
+end;
+
+
+function TCEPController.ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean; out Erro: TErroAPI): TList<TCEPModel>;
 var
   JSONResults: TJSONArray;
   JSONObject: TJSONObject;
@@ -77,22 +146,25 @@ var
   Endereco: TCEPModel;
   I: Integer;
   ErroJSON: TJSONValue;
-  ErroXML: IXMLNode;
+  ErroXML, aXML: IXMLNode;
 begin
+  Erro.HasError := False;
   Enderecos := TList<TCEPModel>.Create;
 
   try
     if AFormatoJSON then
     begin
-      // Recebe o JSON completo
       JSONObject := FService.ConsultarCEPJSON(aInput);
 
-      // Verifica se contém o campo "erro" no JSON
       ErroJSON := JSONObject.GetValue('erro');
       if (ErroJSON <> nil) and (ErroJSON.Value = 'true') then
-        raise Exception.Create('Erro na consulta do CEP: ' + aInput);
+      begin
+        Erro.HasError := True;
+        Erro.StatusCode := 200;
+        Erro.Msg := 'CEP ou Endereço não encontrado.';
+        Exit(nil);
+      end;
 
-      // Se não houver erro, processa os resultados
       JSONResults := JSONObject.GetValue<TJSONArray>('enderecos');
       if JSONResults <> nil then
       begin
@@ -106,23 +178,34 @@ begin
     end
     else
     begin
-      // Recebe o XML completo
       XMLDoc := FService.ConsultarCEPXML(aInput);
+
       if (XMLDoc <> nil) and (XMLDoc.DocumentElement <> nil) then
       begin
-        // Verifica se contém o nó "erro" no XML
         ErroXML := XMLDoc.DocumentElement.ChildNodes.FindNode('erro');
         if (ErroXML <> nil) and (ErroXML.Text = 'true') then
-          raise Exception.Create('Erro na consulta do CEP (XML): ' + aInput);
+        begin
+          Erro.HasError := True;
+          Erro.StatusCode := 200;
+          Erro.Msg := 'CEP ou Endereço não encontrado.';
+          Exit(nil);
+        end;
 
-        // Processa os nós XML normalmente
-        XMLResults := XMLDoc.DocumentElement.ChildNodes;
+        XMLResults := XMLDoc.DocumentElement.ChildNodes.FindNode('enderecos').ChildNodes;
         if XMLResults <> nil then
         begin
           for I := 0 to XMLResults.Count - 1 do
           begin
+            aXML := XMLResults[I] as IXMLNode;
+
+            if (aXML = nil) or (aXML.IsTextElement) then
+              Continue;
+
+            if (aXML.HasAttribute('endereco')) then
+              Continue;
+
             Endereco := TCEPModel.Create(nil);
-            Endereco.LoadFromXML(XMLResults[I] as IXMLNode);
+            Endereco.LoadFromXML(aXML);  // Passa o nó <endereco> diretamente
             Enderecos.Add(Endereco);
           end;
         end;
@@ -130,9 +213,16 @@ begin
     end;
 
     Result := Enderecos;
+
   except
-    Enderecos.Free;
-    raise;
+    on E: Exception do
+    begin
+      Enderecos.Free;
+      Erro.HasError := True;
+      Erro.StatusCode := 500;
+      Erro.Msg := 'Erro ao consultar o WS ViaCEP: ' + E.Message;
+      Result := nil;
+    end;
   end;
 end;
 

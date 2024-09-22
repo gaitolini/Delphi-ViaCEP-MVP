@@ -21,12 +21,6 @@ uses
   Vcl.DBActns, System.Generics.Collections, System.StrUtils, MemDS, DBAccess,
   Uni, Vcl.ComCtrls;
 
-const
-  cnstMsgPluralDuplicidade = 'Há endereços enconstrados na base.'+#10#13+'Deseja efetuar uma nova consulta atualizando as informações dos endereços existentes?';
-  cnstMsgSigularDupicidade = 'O endereço foi encontrado na base!'+#10#13+'Deseja efetuar uma nova consulta atualizando as informações do endereço existente?';
-  cnstMsgPluralConfirmaUpdate = 'Todos os endereços existentes foram atualizados.';
-  cnstMsgSingularConfirmaUpdate = 'O endereço existente foi atualizado.';
-
 type
   TviewBuscaCEP = class(TviewBase)
     actlstConsultaCEP: TActionList;
@@ -76,6 +70,7 @@ type
       Shift: TShiftState);
     procedure dbgEnderecoTitleClick(Column: TColumn);
     procedure dsViacepDataChange(Sender: TObject; Field: TField);
+    procedure edtLocationChange(Sender: TObject);
   private
     UltimaColuna: TColumn;
     procedure OrdenaColuna(Column: TColumn);
@@ -97,75 +92,56 @@ uses
 procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
 var
   Controller: TCEPController;
-  EnderecoList, ExistEnderecoList: TList<TCEPModel>;
-  Endereco1, Endereco2: TCEPModel;
-  Option, ExistingID: Integer;
-  Encontrou: Boolean;
+  ErroAPI: TErroAPI;
+  Formato: TFormato;
 begin
   inherited;
 
-  if Trim(edtLocation.Text) = EmptyStr then
+  if Trim(edtLocation.Text) = '' then
   begin
     ShowMessage('Informe um valor válido!');
-    Abort;
+    Exit;
   end;
 
   Controller := TCEPController.Create(dm.conViacep);
-  ExistEnderecoList := Controller.ConsultaCEP_DB(edtLocation.Text);
-
   try
-    if (ExistEnderecoList.Count > 0) then
-    begin
-      Option := MessageDlg(IfThen(ExistEnderecoList.Count=1,cnstMsgSigularDupicidade, cnstMsgPluralDuplicidade), mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-
-      case Option of
-        mrYes:
-        begin
-          EnderecoList := Controller.ConsultarCEP_WS(edtLocation.Text, rgTipo.ItemIndex = 0);
-
-          for Endereco1 in EnderecoList do
-          begin
-            Encontrou := False;
-
-            for Endereco2 in ExistEnderecoList do
-            begin
-              if Endereco2.CEP = Endereco1.CEP then
-              begin
-                Controller.UpdateEndereco(Endereco1);
-                Encontrou := True;
-                Break;
-              end;
-            end;
-
-            if not Encontrou then
-            begin
-              Controller.InsertEndereco(Endereco1);
-            end;
-          end;
-
-          ShowMessage(IfThen(ExistEnderecoList.Count=1, cnstMsgSingularConfirmaUpdate, cnstMsgSingularConfirmaUpdate));
-        end;
-
-        mrNo:
-        begin
-          Abort;
-        end;
-      end;
-    end
+    if rgTipo.ItemIndex = 0 then
+      Formato := tfJSON
     else
-    begin
-      EnderecoList := Controller.ConsultarCEP_WS(edtLocation.Text, rgTipo.ItemIndex = 0);
-      for Endereco1 in EnderecoList do
+      Formato := tfXML;
+
+    Controller.ConsultaCEP(edtLocation.Text, Formato,
+      function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>): Boolean
+      var
+        Option: Integer;
       begin
-        Controller.InsertEndereco(Endereco1)
-      end;
+        if (CEPsExistentes <> nil) and (CEPsExistentes.Count > 0) then
+        begin
+          Option := MessageDlg(Msg, mtConfirmation, [mbYes, mbNo], 0);
+          if Option = mrYes then
+            Result := True
+          else
+            Result := False;
+        end
+        else
+        begin
+          Option := MessageDlg(Msg, mtConfirmation, [mbYes, mbNo], 0);
+          if Option = mrYes then
+            Result := True
+          else
+            Result := False;
+        end;
+      end, ErroAPI);
+
+    if ErroAPI.HasError then
+    begin
+      ShowMessage(Format('Erro [%d]: %s', [ErroAPI.StatusCode, ErroAPI.Msg]));
     end;
 
     qryViacep.Refresh;
+
   finally
-//    FreeAndNil(EnderecoList);
-    FreeAndNil(Controller);
-    FreeAndNil(ExistEnderecoList);
+    Controller.Free;
   end;
 end;
 
@@ -214,6 +190,82 @@ begin
 end;
 
 
+
+procedure TviewBuscaCEP.edtLocationChange(Sender: TObject);
+var
+  Input: string;
+  IsCEP: Boolean;
+  Parts: TArray<string>;
+  SQLBase, FilterSQL: string;
+begin
+  Input := Trim(edtLocation.Text);
+
+  if Input = '' then
+  begin
+    qryViacep.Close;
+    qryViacep.SQL.Text := 'SELECT * FROM ceps ORDER BY cep ASC';
+    qryViacep.Open;
+    Exit;
+  end;
+
+  IsCEP := (Length(Input) >= 2) and (CharInSet(Input[1], ['0'..'9']));
+
+  qryViacep.DisableControls;
+  try
+    qryViacep.Close;
+    qryViacep.SQL.Clear;
+
+    SQLBase := 'SELECT * FROM ceps WHERE ';
+    FilterSQL := '';
+
+    if IsCEP then
+    begin
+      qryViacep.SQL.Text := SQLBase + 'cep LIKE :pCep ORDER BY cep ASC';
+      qryViacep.ParamByName('pCep').AsString := Input + '%'; // Filtra pelo início do CEP
+    end
+    else
+    begin
+      Parts := Input.Split([',']);
+
+      case Length(Parts) of
+        1:
+          begin
+            qryViacep.SQL.Text := SQLBase + 'UPPER(uf) LIKE UPPER(:pUF) ORDER BY uf ASC';
+            qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
+
+            if Length(Trim(Parts[0])) = 2 then
+            begin
+              edtLocation.Text := Trim(Parts[0]) + ', ';
+              edtLocation.SelStart := Length(edtLocation.Text); // Posiciona o cursor no final
+            end;
+          end;
+        2:
+          begin
+            qryViacep.SQL.Text := SQLBase +
+              'UPPER(uf) LIKE UPPER(:pUF) AND UPPER(localidade) LIKE UPPER(:pLocalidade) ORDER BY localidade ASC';
+            qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
+            qryViacep.ParamByName('pLocalidade').AsString := Trim(Parts[1]) + '%';
+          end;
+        3:
+          begin
+            qryViacep.SQL.Text := SQLBase +
+              'UPPER(uf) LIKE UPPER(:pUF) AND ' +
+              'UPPER(localidade) LIKE UPPER(:pLocalidade) AND ' +
+              'UPPER(logradouro) LIKE UPPER(:pLogradouro) ORDER BY logradouro ASC';
+            qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
+            qryViacep.ParamByName('pLocalidade').AsString := Trim(Parts[1]) + '%';
+            qryViacep.ParamByName('pLogradouro').AsString := Trim(Parts[2]) + '%';
+          end;
+      else
+        qryViacep.SQL.Text := 'SELECT * FROM ceps ORDER BY cep ASC';
+      end;
+    end;
+
+    qryViacep.Open;
+  finally
+    qryViacep.EnableControls;
+  end;
+end;
 
 procedure TviewBuscaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);

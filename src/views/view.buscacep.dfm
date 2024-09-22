@@ -28,6 +28,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
           Height = 442
           Align = alClient
           DataSource = dsViacep
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -122,6 +123,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 1
             TextHint = 'UF, Cidade, Logradouro or CEP'
+            OnChange = edtLocationChange
             OnKeyDown = edtLocationKeyDown
             ExplicitHeight = 33
           end
@@ -287,9 +289,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             item
               Width = 50
             end>
-          ExplicitLeft = 536
-          ExplicitTop = 480
-          ExplicitWidth = 0
         end
       end
     end

@@ -3,7 +3,8 @@ unit model.cep;
 interface
 
 uses
-  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs;
+  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, System.Variants,Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs,
+  System.StrUtils, System.Math;
 
 type
   TCEPModel = class
@@ -62,42 +63,54 @@ end;
 
 procedure TCEPModel.LoadFromJSON(AJSON: TJSONObject);
 begin
-
   if AJSON = nil then
-    raise Exception.Create('O objeto JSON está nulo.');
+    Exit;
 
-  FCEP := AJSON.GetValue<string>('cep').Replace('-', '');
-  FLogradouro := AJSON.GetValue<string>('logradouro');
-  FComplemento := AJSON.GetValue<string>('complemento');
-  FBairro := AJSON.GetValue<string>('bairro');
-  FLocalidade := AJSON.GetValue<string>('localidade');
-  FUF := AJSON.GetValue<string>('uf');
-  FEstado := AJSON.GetValue<string>('estado');
-  FRegiao := AJSON.GetValue<string>('regiao');
-  FIBGE := StrToIntDef(AJSON.GetValue<string>('ibge'),0);
-  FGIA := StrToIntDef(AJSON.GetValue<string>('gia'),0);
-  FDDD := StrToIntDef(AJSON.GetValue<string>('ddd'),0);
-  FSIAFI := StrToIntDef(AJSON.GetValue<string>('siafi'),0);
+  if not AJSON.TryGetValue<string>('cep', FCEP) or (FCEP.Trim = '') then
+    Exit;
+
+  FCEP := FCEP.Replace('-', '');
+
+  FLogradouro := AJSON.GetValue<string>('logradouro', '');
+  FComplemento := AJSON.GetValue<string>('complemento', '');
+  FBairro := AJSON.GetValue<string>('bairro', '');
+  FLocalidade := AJSON.GetValue<string>('localidade', '');
+  FUF := AJSON.GetValue<string>('uf', '');
+  FEstado := AJSON.GetValue<string>('estado', '');
+  FRegiao := AJSON.GetValue<string>('regiao', '');
+  FIBGE := StrToIntDef(AJSON.GetValue<string>('ibge', ''), 0);
+  FGIA := StrToIntDef(AJSON.GetValue<string>('gia', ''), 0);
+  FDDD := StrToIntDef(AJSON.GetValue<string>('ddd', ''), 0);
+  FSIAFI := StrToIntDef(AJSON.GetValue<string>('siafi', ''), 0);
 end;
 
 procedure TCEPModel.LoadFromXML(AXMLNode: IXMLNode);
 begin
-  if AXMLNode = nil then
-    raise Exception.Create('O objeto XML está nulo.');
+  if (AXMLNode = nil) or (AXMLNode.IsTextElement) then
+    Exit;
 
-  FCEP := AXMLNode.ChildValues['cep'];
-  FLogradouro := AXMLNode.ChildValues['logradouro'];
-  FComplemento := AXMLNode.ChildValues['complemento'];
-  FBairro := AXMLNode.ChildValues['bairro'];
-  FLocalidade := AXMLNode.ChildValues['localidade'];
-  FUF := AXMLNode.ChildValues['uf'];
-  FEstado := AXMLNode.ChildValues['estado'];
-  FRegiao := AXMLNode.ChildValues['regiao'];
-  FIBGE := AXMLNode.ChildValues['ibge'];
-  FGIA := AXMLNode.ChildValues['gia'];
-  FDDD := AXMLNode.ChildValues['ddd'];
-  FSIAFI := AXMLNode.ChildValues['siafi'];
+  // Verifica se o campo 'cep' está nulo ou vazio e retorna se não existir
+  if VarIsNull(AXMLNode.ChildValues['cep']) or VarIsEmpty(AXMLNode.ChildValues['cep']) then
+    Exit;
+
+  // Utiliza VarToStr para garantir conversão segura
+  FCEP := VarToStr(AXMLNode.ChildValues['cep']).Replace('-','');
+  FLogradouro := VarToStr(AXMLNode.ChildValues['logradouro']);
+  FComplemento := VarToStr(AXMLNode.ChildValues['complemento']);
+  FBairro := VarToStr(AXMLNode.ChildValues['bairro']);
+  FLocalidade := VarToStr(AXMLNode.ChildValues['localidade']);
+  FUF := VarToStr(AXMLNode.ChildValues['uf']);
+  FEstado := VarToStr(AXMLNode.ChildValues['estado']);
+  FRegiao := VarToStr(AXMLNode.ChildValues['regiao']);
+
+  // Converte os valores numéricos usando StrToIntDef para garantir que nulos ou vazios se tornem 0
+  FIBGE := StrToIntDef(VarToStr(AXMLNode.ChildValues['ibge']), 0);
+  FGIA := StrToIntDef(VarToStr(AXMLNode.ChildValues['gia']), 0);
+  FDDD := StrToIntDef(VarToStr(AXMLNode.ChildValues['ddd']), 0);
+  FSIAFI := StrToIntDef(VarToStr(AXMLNode.ChildValues['siafi']), 0);
 end;
+
+
 
 
 procedure TCEPModel.SaveToDatabase;
