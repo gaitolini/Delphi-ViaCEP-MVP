@@ -4460,7 +4460,6 @@ object viewBase: TviewBase
       ParentBackground = True
       TabOrder = 0
       StyleElements = [seFont, seBorder]
-      ExplicitTop = 24
     end
     object pnlTip: TPanel
       Left = 0
@@ -4478,29 +4477,6 @@ object viewBase: TviewBase
       TabOrder = 1
       Visible = False
       StyleElements = [seFont, seBorder]
-      object svgTipIcon: TSkSvg
-        AlignWithMargins = True
-        Left = 14
-        Top = 7
-        Width = 23
-        Height = 27
-        Margins.Left = 14
-        Margins.Top = 6
-        Margins.Right = 0
-        Margins.Bottom = 0
-        Align = alLeft
-        Svg.OverrideColor = xFFC6C6C6
-        Svg.Source = 
-          '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0' +
-          ' 0 24 24" viewBox="0 0 24 24"><path fill="#3b65f5" d="M12,2C6.5,' +
-          '2,2,6.5,2,12c0,5.5,4.5,10,10,10s10-4.5,10-10C22,6.5,17.5,2,12,2z' +
-          ' M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8S16.4,20,12,20z"/><p' +
-          'ath fill="#3b65f5" d="M12,9.7c-0.6,0-1,0.4-1,1v5.4c0,0.6,0.4,1,1' +
-          ',1s1-0.4,1-1v-5.4C13,10.2,12.6,9.7,12,9.7z"/><circle cx="12" cy=' +
-          '"8" r="1" fill="#3b65f5"/></svg>'
-        ExplicitTop = 9
-        ExplicitHeight = 93
-      end
       object pnlTipLine: TPanel
         Left = 0
         Top = 0
@@ -4515,9 +4491,9 @@ object viewBase: TviewBase
       end
       object pnlTipContent: TPanel
         AlignWithMargins = True
-        Left = 51
+        Left = 14
         Top = 7
-        Width = 813
+        Width = 850
         Height = 27
         Margins.Left = 14
         Margins.Top = 6
@@ -4527,10 +4503,12 @@ object viewBase: TviewBase
         BevelOuter = bvNone
         ShowCaption = False
         TabOrder = 1
+        ExplicitLeft = 51
+        ExplicitWidth = 813
         object lblTipDescription: TSkLabel
           Left = 0
           Top = 0
-          Width = 813
+          Width = 850
           Height = 0
           Margins.Left = 0
           Margins.Top = 0

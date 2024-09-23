@@ -19,7 +19,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.Bind.Navigator, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdActns, datamodule.viacep,
   Vcl.DBActns, System.Generics.Collections, System.StrUtils, MemDS, DBAccess,
-  Uni, Vcl.ComCtrls;
+  Uni, Vcl.ComCtrls, Vcl.ExtActns;
 
 type
   TViewConsultaCEP = class(TviewBase)
@@ -64,6 +64,7 @@ type
     qryViacepddd: TIntegerField;
     qryViacepsiafi: TIntegerField;
     statConsultaCEP: TStatusBar;
+    InternetBrowseURL1: TBrowseURL;
     procedure FormCreate(Sender: TObject);
     procedure actConsultarCepExecute(Sender: TObject);
     procedure edtLocationKeyDown(Sender: TObject; var Key: Word;

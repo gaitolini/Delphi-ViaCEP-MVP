@@ -1,30 +1,35 @@
 inherited ViewConsultaCEP: TViewConsultaCEP
   Caption = 'Consulta CEP'
   ClientHeight = 605
+  ClientWidth = 888
+  ExplicitWidth = 904
   ExplicitHeight = 644
   PixelsPerInch = 96
   TextHeight = 15
   inherited pnlContent: TPanel
+    Width = 888
     Height = 605
     ExplicitHeight = 605
     inherited sbxContent: TScrollBox
+      Width = 888
       Height = 541
       ExplicitTop = 30
       ExplicitHeight = 541
       object pnl1: TPanel
         Left = 0
         Top = 21
-        Width = 878
+        Width = 888
         Height = 520
         Align = alClient
         Caption = 'pnl1'
         ShowCaption = False
         TabOrder = 0
+        ExplicitWidth = 878
         object dbgEndereco: TDBGrid
           AlignWithMargins = True
           Left = 4
           Top = 55
-          Width = 870
+          Width = 880
           Height = 442
           Align = alClient
           DataSource = dsViacep
@@ -40,49 +45,56 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             item
               Expanded = False
               FieldName = 'cep'
+              Title.Caption = 'CEP'
               Width = 100
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'uf'
+              Title.Caption = 'UF'
               Width = 49
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'localidade'
+              Title.Caption = 'Localidade'
               Width = 241
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'logradouro'
+              Title.Caption = 'Logradouro'
               Width = 219
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'complemento'
+              Title.Caption = 'Complemento'
               Width = 98
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'bairro'
+              Title.Caption = 'Bairro'
               Visible = True
             end>
         end
         object pnlMenu: TPanel
           Left = 1
           Top = 1
-          Width = 876
+          Width = 886
           Height = 51
           Align = alTop
           BevelOuter = bvNone
           Caption = 'pnlMenu'
           ShowCaption = False
           TabOrder = 1
+          ExplicitWidth = 876
           object rgTipo: TRadioGroup
             AlignWithMargins = True
             Left = 1
@@ -106,7 +118,7 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             AlignWithMargins = True
             Left = 152
             Top = 6
-            Width = 305
+            Width = 329
             Height = 39
             Margins.Left = 1
             Margins.Top = 6
@@ -122,14 +134,13 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 1
-            TextHint = 'UF, Cidade, Logradouro or CEP'
+            TextHint = 'Digite: UF, Cidade, Logradouro ou CEP'
             OnChange = edtLocationChange
             OnKeyDown = edtLocationKeyDown
-            ExplicitHeight = 33
           end
           object btnInsert: TButton
             AlignWithMargins = True
-            Left = 459
+            Left = 483
             Top = 3
             Width = 111
             Height = 45
@@ -141,10 +152,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
+            ExplicitLeft = 459
           end
           object btnNavDB_Prior: TButton
             AlignWithMargins = True
-            Left = 608
+            Left = 632
             Top = 3
             Width = 34
             Height = 45
@@ -157,10 +169,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 3
+            ExplicitLeft = 608
           end
           object btnNavDB_First: TButton
             AlignWithMargins = True
-            Left = 572
+            Left = 596
             Top = 3
             Width = 34
             Height = 45
@@ -173,10 +186,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
+            ExplicitLeft = 572
           end
           object btnNavDB_Next: TButton
             AlignWithMargins = True
-            Left = 644
+            Left = 668
             Top = 3
             Width = 34
             Height = 45
@@ -189,10 +203,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 5
+            ExplicitLeft = 644
           end
           object btnNavDB_Last: TButton
             AlignWithMargins = True
-            Left = 680
+            Left = 704
             Top = 3
             Width = 34
             Height = 45
@@ -205,10 +220,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 6
+            ExplicitLeft = 680
           end
           object btnNavDB_Delete: TButton
             AlignWithMargins = True
-            Left = 716
+            Left = 740
             Top = 3
             Width = 34
             Height = 45
@@ -221,10 +237,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 7
+            ExplicitLeft = 716
           end
           object btnNavDB_Refresh: TButton
             AlignWithMargins = True
-            Left = 752
+            Left = 776
             Top = 3
             Width = 34
             Height = 45
@@ -237,10 +254,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 8
+            ExplicitLeft = 752
           end
           object btnSaveJSON: TButton
             AlignWithMargins = True
-            Left = 788
+            Left = 812
             Top = 3
             Width = 34
             Height = 45
@@ -253,10 +271,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 9
+            ExplicitLeft = 788
           end
           object btnSaveAsXML: TButton
             AlignWithMargins = True
-            Left = 824
+            Left = 848
             Top = 3
             Width = 34
             Height = 45
@@ -269,35 +288,50 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 10
+            ExplicitLeft = 824
           end
         end
         object statConsultaCEP: TStatusBar
           Left = 1
           Top = 500
-          Width = 876
+          Width = 886
           Height = 19
           Panels = <
             item
-              Text = 'Quantidade de de registros'
-              Width = 150
+              Text = 'Quantidade de registros'
+              Width = 140
             end
             item
               Alignment = taRightJustify
-              Text = '0000000000000'
-              Width = 100
+              Text = '0'
+              Width = 90
             end
             item
               Width = 50
             end>
+          ExplicitLeft = 0
+          ExplicitTop = 499
         end
       end
     end
     inherited pnlTip: TPanel
       Top = 571
+      Width = 888
       ExplicitTop = 571
+      inherited pnlTipLine: TPanel
+        Width = 888
+      end
+      inherited pnlTipContent: TPanel
+        Width = 823
+        inherited lblTipDescription: TSkLabel
+          Width = 823
+        end
+      end
     end
     inherited pnlTitle: TPanel
+      Width = 888
       inherited lblTitle: TSkLabel
+        Width = 839
         Words = <
           item
             Caption = 'Consulta CEP'
@@ -307,12 +341,15 @@ inherited ViewConsultaCEP: TViewConsultaCEP
         ExplicitLeft = -6
         ExplicitTop = -2
       end
+      inherited pnlBack: TPanel
+        Left = 839
+      end
     end
   end
   object actlstConsultaCEP: TActionList
     Images = ilConsultaCEP
-    Left = 672
-    Top = 230
+    Left = 664
+    Top = 222
     object actConsultarCep: TAction
       Category = 'LiveBindings'
       Caption = 'Consulta CEP'
@@ -372,10 +409,16 @@ inherited ViewConsultaCEP: TViewConsultaCEP
       ShortCut = 16466
       DataSource = dsViacep
     end
+    object InternetBrowseURL1: TBrowseURL
+      Category = 'Internet'
+      Caption = 'Github'
+      Hint = 'Acesse meu github'
+      URL = 'https://github.com/gaitolini'
+    end
   end
   object ilConsultaCEP: TImageList
-    Left = 672
-    Top = 286
+    Left = 744
+    Top = 230
     Bitmap = {
       494C01010F002000040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
