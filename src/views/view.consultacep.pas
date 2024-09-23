@@ -22,7 +22,7 @@ uses
   Uni, Vcl.ComCtrls;
 
 type
-  TviewConsultaCEP = class(TviewBase)
+  TViewConsultaCEP = class(TviewBase)
     actlstConsultaCEP: TActionList;
     ilConsultaCEP: TImageList;
     actConsultarCep: TAction;
@@ -83,7 +83,7 @@ type
   end;
 
 var
-  viewBuscaCEP: TviewConsultaCEP;
+  ViewConsultaCEP: TViewConsultaCEP;
 
 implementation
 
@@ -92,7 +92,7 @@ uses
 
 {$R *.dfm}
 
-procedure TviewConsultaCEP.actConsultarCepExecute(Sender: TObject);
+procedure TViewConsultaCEP.actConsultarCepExecute(Sender: TObject);
 var
   Controller: TCEPController;
   ErroAPI: TErroAPI;
@@ -174,18 +174,18 @@ begin
   end;
 end;
 
-procedure TviewConsultaCEP.dbgEnderecoTitleClick(Column: TColumn);
+procedure TViewConsultaCEP.dbgEnderecoTitleClick(Column: TColumn);
 begin
   OrdenaColuna(Column);
 end;
 
-procedure TviewConsultaCEP.dsViacepDataChange(Sender: TObject; Field: TField);
+procedure TViewConsultaCEP.dsViacepDataChange(Sender: TObject; Field: TField);
 begin
   inherited;
   statConsultaCEP.Panels[1].Text := Format('%0000000d',[qryViacep.RecordCount]);
 end;
 
-procedure TviewConsultaCEP.OrdenaColuna(Column: TColumn);
+procedure TViewConsultaCEP.OrdenaColuna(Column: TColumn);
 var
   lFieldName: string;
   lOrderBy: string;
@@ -220,12 +220,12 @@ end;
 
 
 
-procedure TviewConsultaCEP.SetUltimaColuna(const Value: TColumn);
+procedure TViewConsultaCEP.SetUltimaColuna(const Value: TColumn);
 begin
   FUltimaColuna := Value;
 end;
 
-procedure TviewConsultaCEP.edtLocationChange(Sender: TObject);
+procedure TViewConsultaCEP.edtLocationChange(Sender: TObject);
 var
   Input: string;
   IsCEP: Boolean;
@@ -302,7 +302,7 @@ begin
   end;
 end;
 
-procedure TviewConsultaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
+procedure TViewConsultaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   inherited;
@@ -310,7 +310,7 @@ begin
     actConsultarCepExecute(nil);
 end;
 
-procedure TviewConsultaCEP.FormCreate(Sender: TObject);
+procedure TViewConsultaCEP.FormCreate(Sender: TObject);
 begin
   inherited;
   qryViacep.Active := True;
@@ -318,7 +318,7 @@ begin
   OrdenaColuna(UltimaColuna);
 end;
 
-function TviewConsultaCEP.GetUltimaColuna: TColumn;
+function TViewConsultaCEP.GetUltimaColuna: TColumn;
 begin
   if not Assigned(FUltimaColuna) then
   begin

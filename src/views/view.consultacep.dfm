@@ -1,4 +1,4 @@
-inherited viewBuscaCEP: TviewBuscaCEP
+inherited ViewConsultaCEP: TViewConsultaCEP
   Caption = 'Consulta CEP'
   ClientHeight = 605
   ExplicitHeight = 644
@@ -961,8 +961,8 @@ inherited viewBuscaCEP: TviewBuscaCEP
     Connection = dm.conViacep
     SQL.Strings = (
       'SELECT * FROM ceps order by cep asc')
-    Left = 760
-    Top = 176
+    Left = 736
+    Top = 160
     object qryViacepid: TIntegerField
       FieldName = 'id'
     end

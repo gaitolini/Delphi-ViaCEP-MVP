@@ -3,8 +3,17 @@ unit datamodule.viacep;
 interface
 
 uses
-  System.SysUtils, System.Classes, DAScript, UniScript, DADump, UniDump,
-  UniProvider, PostgreSQLUniProvider, DBAccess, Uni, Data.DB;
+  System.SysUtils,
+  System.Classes,
+  DAScript,
+  UniScript,
+  DADump,
+  UniDump,
+  UniProvider,
+  PostgreSQLUniProvider,
+  DBAccess,
+  Uni,
+  Data.DB;
 
 type
   Tdm = class(TDataModule)
