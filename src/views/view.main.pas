@@ -48,8 +48,6 @@ type
     imgMenuMain_Toggle: TSkAnimatedImage;
     imgMenuMain_CEP: TSkAnimatedImage;
     sklblMenuMain_CEP: TSkLabel;
-    imgMenuMain_Endereco: TSkAnimatedImage;
-    sklblMenuMain_Endereco: TSkLabel;
     imgMenuMain_Layout: TSkAnimatedImage;
     sklblMenuMain_layout: TSkLabel;
     imgWallPapper: TSkAnimatedImage;
@@ -80,12 +78,18 @@ type
     procedure mniStartClick(Sender: TObject);
     procedure mniStopClick(Sender: TObject);
     procedure imgMenuMain_GenericMouseLeave(Sender: TObject);
-    procedure imgMenuMain_EnderecoClick(Sender: TObject);
-    procedure imgMenuMain_LayoutClick(Sender: TObject);
     procedure imgMenuMain_PictureClick(Sender: TObject);
     procedure imgMenuMain_CEPClick(Sender: TObject);
-    procedure sklblMenuMain_EnderecoClick(Sender: TObject);
     procedure sklblMenuMain_CEPClick(Sender: TObject);
+    procedure imgMenuMain_LayoutClick(Sender: TObject);
+    procedure sklblMenuMain_CEPMouseEnter(Sender: TObject);
+    procedure imgMenuMain_CEPMouseEnter(Sender: TObject);
+    procedure imgMenuMain_LayoutMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure sklblMenuMain_layoutMouseEnter(Sender: TObject);
+    procedure imgMenuMain_LayoutMouseEnter(Sender: TObject);
+    procedure imgMenuMain_PictureMouseEnter(Sender: TObject);
+    procedure sklblMenuMain_PictureMouseEnter(Sender: TObject);
   private
     { Private declarations }
     FCloseOnMenuClick: Boolean;
@@ -101,7 +105,7 @@ var
 implementation
 
 uses
-  view.layout, view.consultacep, view.endereco, datamodule.viacep;
+  view.layout, view.consultacep, datamodule.viacep;
 
 {$R *.dfm}
 
@@ -157,7 +161,6 @@ begin
 
   imgMenuMain_CEP.AnimeOneMoretime;
   imgMenuMain_Layout.AnimeOneMoretime;
-  imgMenuMain_Endereco.AnimeOneMoretime;
   imgMenuMain_Picture.AnimeOneMoretime;
 end;
 
@@ -170,10 +173,21 @@ end;
 procedure TviewMain.imgMenuMain_LayoutClick(Sender: TObject);
 begin
   inherited;
-  TSkAnimatedImage(Sender).Animation.Stop;
   ChildForm<TviewLayout>(False).Show;
-  if SV.Opened and FCloseOnMenuClick then
-    SV.Close;
+  TSkAnimatedImage(Sender).Animation.Stop;
+end;
+
+procedure TviewMain.imgMenuMain_LayoutMouseEnter(Sender: TObject);
+begin
+  inherited;
+  imgMenuMain_Layout.AnimeOneMoretime;
+end;
+
+procedure TviewMain.imgMenuMain_LayoutMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  inherited;
+  imgMenuMain_Layout.AnimeOneMoretime;
 end;
 
 procedure TviewMain.imgMenuMain_PictureClick(Sender: TObject);
@@ -183,6 +197,12 @@ begin
   actAbrirLottie.Execute;
 end;
 
+procedure TviewMain.imgMenuMain_PictureMouseEnter(Sender: TObject);
+begin
+  inherited;
+  imgMenuMain_Picture.AnimeOneMoretime;
+end;
+
 procedure TviewMain.imgMenuMain_CEPClick(Sender: TObject);
 begin
   inherited;
@@ -190,13 +210,10 @@ begin
   TSkAnimatedImage(Sender).Animation.Stop;
 end;
 
-procedure TviewMain.imgMenuMain_EnderecoClick(Sender: TObject);
+procedure TviewMain.imgMenuMain_CEPMouseEnter(Sender: TObject);
 begin
   inherited;
-  TSkAnimatedImage(Sender).Animation.Stop;
-  ChildForm<TviewEndereco>(False).Show;
-  if SV.Opened and FCloseOnMenuClick then
-    SV.Close;
+  imgMenuMain_CEP.AnimeOneMoretime;
 end;
 
 procedure TviewMain.imgMenuMain_ToggleAnimationFinish(Sender: TObject);
@@ -267,12 +284,10 @@ begin
     SV.Close;
 end;
 
-procedure TviewMain.sklblMenuMain_EnderecoClick(Sender: TObject);
+procedure TviewMain.sklblMenuMain_CEPMouseEnter(Sender: TObject);
 begin
   inherited;
-  ChildForm<TviewEndereco>(False).Show;
-  if SV.Opened and FCloseOnMenuClick then
-    SV.Close;
+  imgMenuMain_CEP.AnimeOneMoretime;
 end;
 
 procedure TviewMain.sklblMenuMain_layoutClick(Sender: TObject);
@@ -283,22 +298,32 @@ begin
     SV.Close;
 end;
 
+procedure TviewMain.sklblMenuMain_layoutMouseEnter(Sender: TObject);
+begin
+  inherited;
+  imgMenuMain_Layout.AnimeOneMoretime;
+end;
+
 procedure TviewMain.sklblMenuMain_PictureClick(Sender: TObject);
 begin
   inherited;
   actAbrirLottie.Execute;
 end;
 
+procedure TviewMain.sklblMenuMain_PictureMouseEnter(Sender: TObject);
+begin
+  inherited;
+  imgMenuMain_Picture.AnimeOneMoretime;
+end;
+
 procedure TviewMain.SVClosing(Sender: TObject);
 begin
   inherited;
   ControlSKLabel(sklblMenuMain_CEP, False);
-  ControlSKLabel(sklblMenuMain_Endereco, False);
   ControlSKLabel(sklblMenuMain_layout, False);
   ControlSKLabel(sklblMenuMain_Picture, False);
 
   imgMenuMain_CEP.AnimeOneMoretime;
-  imgMenuMain_Endereco.AnimeOneMoretime;
   imgMenuMain_Layout.AnimeOneMoretime;
   imgMenuMain_Picture.AnimeOneMoretime;
 end;
@@ -308,12 +333,10 @@ begin
   inherited;
 
   ControlSKLabel(sklblMenuMain_CEP, True);
-  ControlSKLabel(sklblMenuMain_Endereco, True);
   ControlSKLabel(sklblMenuMain_layout, True);
   ControlSKLabel(sklblMenuMain_Picture, True);
 
   imgMenuMain_CEP.AnimeOneMoretime;
-  imgMenuMain_Endereco.AnimeOneMoretime;
   imgMenuMain_Layout.AnimeOneMoretime;
   imgMenuMain_Picture.AnimeOneMoretime;
 end;

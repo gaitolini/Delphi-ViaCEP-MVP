@@ -4,6 +4,7 @@ inherited viewLayout: TviewLayout
   TextHeight = 15
   inherited pnlContent: TPanel
     inherited sbxContent: TScrollBox
+      ExplicitTop = 30
       object pnlSettings: TPanel
         Left = 0
         Top = 21
@@ -154,6 +155,7 @@ inherited viewLayout: TviewLayout
     end
     inherited pnlTitle: TPanel
       inherited lblTitle: TSkLabel
+        TextSettings.FontColor = claAliceblue
         Words = <
           item
             Caption = 'Layout'

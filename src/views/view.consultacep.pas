@@ -99,37 +99,50 @@ var
   Formato: TFormato;
   Parts: TArray<string>;
   InputStr, UF, Localidade, Logradouro: string;
+  InputInt: Integer;
 begin
   inherited;
 
   InputStr := Trim(edtLocation.Text);
   if (InputStr = EmptyStr) then
   begin
-    ShowMessage('Informe um valor!');
-    Exit;
-  end;
-
-  Parts := InputStr.Split([',']);
-
-  UF := Trim(Parts[0]);
-  if (Length(UF) <> 2) then
-  begin
-    MessageDlg('O Campo UF é esperado apenas 2 letras.', mtInformation, [mbOK], 0);
+    MessageDlg('Informe um valor para pesquisar.', mtInformation, [mbOK], 0);
     Abort;
   end;
 
-  Localidade := Parts[1];
-  if (Length(Localidade) < 3) then
+  if TryStrToInt(InputStr, InputInt) then
   begin
-    MessageDlg('O Campo Localidade é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
-    Abort;
-  end;
+     if Length(InputStr) <> 8 then
+     begin
+       MessageDlg('Informe um CEP de 8 dígitos.', mtInformation, [mbOK], 0);
+       Abort;
+     end;
 
-  Logradouro := Parts[2];
-  if (Length(Logradouro) < 3) then
+  end
+  else
   begin
-    MessageDlg('O Campo Logradouro é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
-    Abort;
+    Parts := InputStr.Split([',']);
+
+    UF := Trim(Parts[0]);
+    if (Length(UF) <> 2) then
+    begin
+      MessageDlg('O Campo UF é esperado apenas 2 letras.', mtInformation, [mbOK], 0);
+      Abort;
+    end;
+
+    Localidade := Parts[1];
+    if (Length(Localidade) < 3) then
+    begin
+      MessageDlg('O Campo Localidade é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+      Abort;
+    end;
+
+    Logradouro := Parts[2];
+    if (Length(Logradouro) < 3) then
+    begin
+      MessageDlg('O Campo Logradouro é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+      Abort;
+    end;
   end;
 
   Controller := TCEPController.Create(dm.conViacep);

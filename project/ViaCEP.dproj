@@ -121,10 +121,6 @@
             <Form>ViewConsultaCEP</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\src\views\view.endereco.pas">
-            <Form>ViewEndereco</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="..\src\models\model.cep.pas"/>
         <DCCReference Include="..\src\controllers\controller.cep.pas"/>
         <DCCReference Include="..\src\services\service.viacep.pas"/>

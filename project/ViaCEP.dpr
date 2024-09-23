@@ -7,7 +7,6 @@ uses
   view.main in '..\src\views\view.main.pas' {viewMain},
   view.base in '..\src\views\view.base.pas' {viewBase},
   view.consultacep in '..\src\views\view.consultacep.pas' {ViewConsultaCEP},
-  view.endereco in '..\src\views\view.endereco.pas' {ViewEndereco},
   model.cep in '..\src\models\model.cep.pas',
   controller.cep in '..\src\controllers\controller.cep.pas',
   service.viacep in '..\src\services\service.viacep.pas',
