@@ -1,5 +1,5 @@
-inherited viewBuscaCEP: TviewBuscaCEP
-  Caption = 'viewBuscaCEP'
+inherited ViewConsultaCEP: TViewConsultaCEP
+  Caption = 'Consulta CEP'
   ClientHeight = 605
   ExplicitHeight = 644
   PixelsPerInch = 96
@@ -9,6 +9,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
     ExplicitHeight = 605
     inherited sbxContent: TScrollBox
       Height = 541
+      ExplicitTop = 30
       ExplicitHeight = 541
       object pnl1: TPanel
         Left = 0
@@ -24,15 +25,17 @@ inherited viewBuscaCEP: TviewBuscaCEP
           Left = 4
           Top = 55
           Width = 870
-          Height = 461
+          Height = 442
           Align = alClient
-          DataSource = dsConsultaCEP
+          DataSource = dsViacep
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -12
           TitleFont.Name = 'Segoe UI'
           TitleFont.Style = []
+          OnTitleClick = dbgEnderecoTitleClick
           Columns = <
             item
               Expanded = False
@@ -42,64 +45,31 @@ inherited viewBuscaCEP: TviewBuscaCEP
             end
             item
               Expanded = False
-              FieldName = 'logradouro'
-              Width = 200
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'complemento'
-              Width = 100
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'bairro'
-              Width = 150
+              FieldName = 'uf'
+              Width = 49
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'localidade'
-              Width = 50
+              Width = 241
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'uf'
-              Width = 26
+              FieldName = 'logradouro'
+              Width = 219
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'estado'
-              Width = 100
+              FieldName = 'complemento'
+              Width = 98
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'regiao'
-              Width = 40
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ibge'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'gia'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'ddd'
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'siafi'
+              FieldName = 'bairro'
               Visible = True
             end>
         end
@@ -132,7 +102,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 0
           end
-          object edtCEP: TEdit
+          object edtLocation: TEdit
             AlignWithMargins = True
             Left = 152
             Top = 6
@@ -153,6 +123,9 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ShowHint = True
             TabOrder = 1
             TextHint = 'UF, Cidade, Logradouro or CEP'
+            OnChange = edtLocationChange
+            OnKeyDown = edtLocationKeyDown
+            ExplicitHeight = 33
           end
           object btnInsert: TButton
             AlignWithMargins = True
@@ -168,7 +141,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
-            ExplicitLeft = 259
           end
           object btnNavDB_Prior: TButton
             AlignWithMargins = True
@@ -185,7 +157,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 3
-            ExplicitLeft = 408
           end
           object btnNavDB_First: TButton
             AlignWithMargins = True
@@ -202,7 +173,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
-            ExplicitLeft = 372
           end
           object btnNavDB_Next: TButton
             AlignWithMargins = True
@@ -219,7 +189,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 5
-            ExplicitLeft = 444
           end
           object btnNavDB_Last: TButton
             AlignWithMargins = True
@@ -236,7 +205,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 6
-            ExplicitLeft = 480
           end
           object btnNavDB_Delete: TButton
             AlignWithMargins = True
@@ -253,7 +221,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 7
-            ExplicitLeft = 516
           end
           object btnNavDB_Refresh: TButton
             AlignWithMargins = True
@@ -270,7 +237,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 8
-            ExplicitLeft = 552
           end
           object btnSaveJSON: TButton
             AlignWithMargins = True
@@ -287,7 +253,6 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 9
-            ExplicitLeft = 588
           end
           object btnSaveAsXML: TButton
             AlignWithMargins = True
@@ -304,8 +269,26 @@ inherited viewBuscaCEP: TviewBuscaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 10
-            ExplicitLeft = 624
           end
+        end
+        object statConsultaCEP: TStatusBar
+          Left = 1
+          Top = 500
+          Width = 876
+          Height = 19
+          Panels = <
+            item
+              Text = 'Quantidade de de registros'
+              Width = 150
+            end
+            item
+              Alignment = taRightJustify
+              Text = '0000000000000'
+              Width = 100
+            end
+            item
+              Width = 50
+            end>
         end
       end
     end
@@ -317,7 +300,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
       inherited lblTitle: TSkLabel
         Words = <
           item
-            Caption = 'Buscar CEP'
+            Caption = 'Consulta CEP'
             FontColor = claAliceblue
             StyledSettings = [Family, Size, Style]
           end>
@@ -352,47 +335,47 @@ inherited viewBuscaCEP: TviewBuscaCEP
       Hint = 'First'
       ImageIndex = 0
       ShortCut = 16454
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetPrior1: TDataSetPrior
       Category = 'Dataset'
       Hint = 'Prior'
       ImageIndex = 1
       ShortCut = 16464
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetNext1: TDataSetNext
       Category = 'Dataset'
       Hint = 'Next'
       ImageIndex = 2
       ShortCut = 16462
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetLast1: TDataSetLast
       Category = 'Dataset'
       Hint = 'Last'
       ImageIndex = 3
       ShortCut = 16460
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetDelete1: TDataSetDelete
       Category = 'Dataset'
       Hint = 'Delete'
       ImageIndex = 4
       ShortCut = 16452
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
     object DatasetRefresh1: TDataSetRefresh
       Category = 'Dataset'
       Hint = 'Refresh'
       ImageIndex = 5
       ShortCut = 16466
-      DataSource = dsConsultaCEP
+      DataSource = dsViacep
     end
   end
   object ilConsultaCEP: TImageList
-    Left = 680
-    Top = 318
+    Left = 672
+    Top = 286
     Bitmap = {
       494C01010F002000040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
@@ -929,79 +912,104 @@ inherited viewBuscaCEP: TviewBuscaCEP
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000000000000000
       000000000000}
   end
-  object dsConsultaCEP: TDataSource
-    DataSet = qryConsultaCEP
+  object dsViacep: TUniDataSource
+    DataSet = qryViacep
+    OnDataChange = dsViacepDataChange
     Left = 664
-    Top = 174
+    Top = 160
   end
-  object qryConsultaCEP: TFDQuery
-    Connection = dm.connViacep
+  object qryViacep: TUniQuery
+    SQLInsert.Strings = (
+      'INSERT INTO ceps'
+      
+        '  (id, cep, logradouro, complemento, bairro, localidade, uf, est' +
+        'ado, regiao, ibge, gia, ddd, siafi)'
+      'VALUES'
+      
+        '  (:id, :cep, :logradouro, :complemento, :bairro, :localidade, :' +
+        'uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)')
+    SQLDelete.Strings = (
+      'DELETE FROM ceps'
+      'WHERE'
+      '  id = :Old_id')
+    SQLUpdate.Strings = (
+      'UPDATE ceps'
+      'SET'
+      
+        '  id = :id, cep = :cep, logradouro = :logradouro, complemento = ' +
+        ':complemento, bairro = :bairro, localidade = :localidade, uf = :' +
+        'uf, estado = :estado, regiao = :regiao, ibge = :ibge, gia = :gia' +
+        ', ddd = :ddd, siafi = :siafi'
+      'WHERE'
+      '  id = :Old_id')
+    SQLLock.Strings = (
+      'SELECT * FROM ceps'
+      'WHERE'
+      '  id = :Old_id'
+      'FOR UPDATE NOWAIT')
+    SQLRefresh.Strings = (
+      
+        'SELECT id, cep, logradouro, complemento, bairro, localidade, uf,' +
+        ' estado, regiao, ibge, gia, ddd, siafi FROM ceps'
+      'WHERE'
+      '  id = :id')
+    SQLRecCount.Strings = (
+      'SELECT count(*) FROM ('
+      'SELECT * FROM ceps'
+      ''
+      ') t')
+    Connection = dm.conViacep
     SQL.Strings = (
-      'SELECT * FROM ceps WHERE cep')
-    Left = 760
-    Top = 174
-    object fdtncfldConsultaCEPid: TFDAutoIncField
+      'SELECT * FROM ceps order by cep asc')
+    Left = 736
+    Top = 160
+    object qryViacepid: TIntegerField
       FieldName = 'id'
-      Origin = 'id'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
     end
-    object strngfldConsultaCEPcep: TStringField
+    object strngfldViacepcep: TStringField
       FieldName = 'cep'
-      Origin = 'cep'
       Required = True
-      Size = 32767
+      Size = 9
     end
-    object strngfldConsultaCEPlogradouro: TStringField
+    object strngfldViaceplogradouro: TStringField
       FieldName = 'logradouro'
-      Origin = 'logradouro'
       Size = 200
     end
-    object strngfldConsultaCEPcomplemento: TStringField
+    object strngfldViacepcomplemento: TStringField
       FieldName = 'complemento'
-      Origin = 'complemento'
       Size = 50
     end
-    object strngfldConsultaCEPbairro: TStringField
+    object strngfldViacepbairro: TStringField
       FieldName = 'bairro'
-      Origin = 'bairro'
       Size = 200
     end
-    object strngfldConsultaCEPlocalidade: TStringField
+    object strngfldViaceplocalidade: TStringField
       FieldName = 'localidade'
-      Origin = 'localidade'
       Size = 100
     end
-    object strngfldConsultaCEPuf: TStringField
+    object strngfldViacepuf: TStringField
       FieldName = 'uf'
-      Origin = 'uf'
       Size = 2
     end
-    object strngfldConsultaCEPestado: TStringField
+    object strngfldViacepestado: TStringField
       FieldName = 'estado'
-      Origin = 'estado'
       Size = 150
     end
-    object strngfldConsultaCEPregiao: TStringField
+    object strngfldViacepregiao: TStringField
       FieldName = 'regiao'
-      Origin = 'regiao'
       Size = 150
     end
-    object qryConsultaCEPibge: TIntegerField
+    object qryViacepibge: TIntegerField
       FieldName = 'ibge'
-      Origin = 'ibge'
     end
-    object qryConsultaCEPgia: TIntegerField
+    object qryViacepgia: TIntegerField
       FieldName = 'gia'
-      Origin = 'gia'
     end
-    object qryConsultaCEPddd: TIntegerField
+    object qryViacepddd: TIntegerField
       FieldName = 'ddd'
-      Origin = 'ddd'
     end
-    object qryConsultaCEPsiafi: TIntegerField
+    object qryViacepsiafi: TIntegerField
       FieldName = 'siafi'
-      Origin = 'siafi'
     end
   end
 end

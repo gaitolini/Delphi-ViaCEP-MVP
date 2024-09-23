@@ -108,16 +108,14 @@ var
 begin
   Parts := Input.Split([',']);
 
-  // Verifica se existem as 3 partes necessárias (UF, Cidade, Logradouro)
   if Length(Parts) <> 3 then
-    raise Exception.Create('O formato para consulta por endereço é UF, Cidade, Logradouro.');
+    raise Exception.Create('São necessários três parâmetros obrigatórios (UF, Cidade e Logradouro), '+#13+
+                          '  sendo que para Cidade e Logradouro também é obrigatório um número mínimo de três caracteres');
 
-  // Extrai as partes do input (UF, Cidade e Logradouro)
   UF := Parts[0].Trim;
   Cidade := Parts[1].Trim;
   Logradouro := Parts[2].Trim;
 
-  // Monta a URL final mantendo o formato fornecido pelo usuário
   Result := Format('https://viacep.com.br/ws/%s/%s/%s/%s/', [UF, Cidade, Logradouro, IfThen( TypeInfo(T) = TypeInfo(TSerializableJSON),'json','xml')]);
 end;
 
@@ -152,7 +150,6 @@ begin
 
   DoRequest;
 
-  // Verifica se deve realizar a busca por CEP ou por endereço completo
   if IsCEP(FInput) then
     LURL := BuildURLByCEP<T>(FInput)
   else
@@ -164,26 +161,31 @@ begin
     StatusCode := LResponse.StatusCode;
     ResponseContent := LResponse.ContentAsString.Trim.Replace(#13, '').Replace(#10, '');
 
-    if LResponse.StatusCode = 200 then
+    if StatusCode = 200 then
     begin
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
       begin
-        // Trata JSON (pode ser objeto ou array)
         JSONResult := TJSONObject.ParseJSONValue(ResponseContent);
 
         if Assigned(JSONResult) then
         begin
-          if JSONResult is TJSONArray then
+          if (JSONResult is TJSONObject) and (TJSONObject(JSONResult).GetValue('erro') <> nil) then
           begin
-            // Se for um array, tratamos como um array de endereços
+            Result := T(TSerializableJSON.Create(TJSONObject.Create
+              .AddPair('erro', 'true')
+              .AddPair('status code', '200')
+              .AddPair('msg', 'CEP ou Endereço não encontrado.')));
+          end
+          else if JSONResult is TJSONArray then
+          begin
             JSONArray := TJSONArray(JSONResult);
             Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
           end
           else if JSONResult is TJSONObject then
           begin
-            // Se for um objeto JSON, tratamos como um único endereço
-            JSONObject := TJSONObject(JSONResult);
-            Result := T(TSerializableJSON.Create(JSONObject.Clone as TJSONObject));
+            JSONArray := TJSONArray.Create;
+            JSONArray.AddElement(TJSONObject(JSONResult.Clone as TJSONValue)); // Adiciona o objeto ao array
+            Result := T(TSerializableJSON.Create(TJSONObject.Create.AddPair('enderecos', JSONArray.Clone as TJSONArray)));
           end
           else
             raise Exception.Create('Erro ao parsear o retorno JSON.');
@@ -193,34 +195,52 @@ begin
       end
       else if TypeInfo(T) = TypeInfo(TSerializableXML) then
       begin
-        // Trata XML (pode ser um ou múltiplos endereços)
         XMLResult := TXMLDocument.Create(nil);
         XMLResult.LoadFromXML(ResponseContent);
-
-        // Verifica se há múltiplos nós de endereços
         XMLNodes := XMLResult.DocumentElement.ChildNodes;
 
-        if XMLNodes.Count > 1 then
+        if XMLResult.DocumentElement.ChildNodes.FindNode('erro') <> nil then
         begin
-          // Se houver mais de um nó de endereço
+          XMLResult := TXMLDocument.Create(nil);
+          XMLResult.LoadFromXML('<root><erro>true</erro><status code="200"/><msg>CEP ou Endereço não encontrado.</msg></root>');
           Result := T(TSerializableXML.Create(XMLResult));
         end
         else
         begin
-          // Apenas um nó de endereço
           Result := T(TSerializableXML.Create(XMLResult));
         end;
+      end;
+    end
+    else if StatusCode = 400 then
+    begin
+      if TypeInfo(T) = TypeInfo(TSerializableJSON) then
+      begin
+        Result := T(TSerializableJSON.Create(TJSONObject.Create
+          .AddPair('erro', 'true')
+          .AddPair('status code', '400')
+          .AddPair('msg', 'Verifique a URL.')));
+      end
+      else
+      begin
+        XMLResult := TXMLDocument.Create(nil);
+        XMLResult.LoadFromXML('<root><erro>true</erro><status code="400"/><msg>Verifique a URL.</msg></root>');
+        Result := T(TSerializableXML.Create(XMLResult));
       end;
     end
     else
     begin
       Erro := True;
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
-        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+      begin
+        Result := T(TSerializableJSON.Create(TJSONObject.Create
+          .AddPair('erro', 'true')
+          .AddPair('status code', StatusCode.ToString)
+          .AddPair('msg', 'Erro ao consultar a API.')));
+      end
       else
       begin
         XMLResult := TXMLDocument.Create(nil);
-        XMLResult.LoadFromXML('<root></root>');
+        XMLResult.LoadFromXML(Format('<root><erro>true</erro><status code="%d"/><msg>Erro ao consultar a API.</msg></root>', [StatusCode]));
         Result := T(TSerializableXML.Create(XMLResult));
       end;
     end;
@@ -230,11 +250,14 @@ begin
       Erro := True;
       ResponseContent := E.Message;
       if TypeInfo(T) = TypeInfo(TSerializableJSON) then
-        Result := T(TSerializableJSON.Create(TJSONObject.Create))
+        Result := T(TSerializableJSON.Create(TJSONObject.Create
+          .AddPair('erro', 'true')
+          .AddPair('status code', StatusCode.ToString)
+          .AddPair('msg', ResponseContent)))
       else
       begin
         XMLResult := TXMLDocument.Create(nil);
-        XMLResult.LoadFromXML('<root></root>');
+        XMLResult.LoadFromXML(Format('<root><erro>true</erro><status code="%d"/><msg>%s</msg></root>', [StatusCode, ResponseContent]));
         Result := T(TSerializableXML.Create(XMLResult));
       end;
     end;
@@ -242,7 +265,6 @@ begin
 
   DoResponse(ResponseContent, StatusCode, Erro);
 end;
-
 
 constructor TSerializableJSON.Create(AJSON: TJSONObject);
 begin

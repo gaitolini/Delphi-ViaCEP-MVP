@@ -15,6 +15,12 @@
         <Projects Include="..\src\components\examples\ProjectViaCEPBasic.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Samples\Object Pascal\Database\FireDAC\Samples\Phys Layer\IFDPhysConnection\CreateConnection\CreateConnection.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\DELPHI-DEMOS\UniDAC for RAD Studio 10.3\Demos\UniDacDemo\UniDacDemo.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +65,32 @@
     <Target Name="ProjectViaCEPBasic:Make">
         <MSBuild Projects="..\src\components\examples\ProjectViaCEPBasic.dproj" Targets="Make"/>
     </Target>
+    <Target Name="CreateConnection">
+        <MSBuild Projects="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Samples\Object Pascal\Database\FireDAC\Samples\Phys Layer\IFDPhysConnection\CreateConnection\CreateConnection.dproj"/>
+    </Target>
+    <Target Name="CreateConnection:Clean">
+        <MSBuild Projects="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Samples\Object Pascal\Database\FireDAC\Samples\Phys Layer\IFDPhysConnection\CreateConnection\CreateConnection.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CreateConnection:Make">
+        <MSBuild Projects="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Samples\Object Pascal\Database\FireDAC\Samples\Phys Layer\IFDPhysConnection\CreateConnection\CreateConnection.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UniDacDemo">
+        <MSBuild Projects="..\..\..\DELPHI-DEMOS\UniDAC for RAD Studio 10.3\Demos\UniDacDemo\UniDacDemo.dproj"/>
+    </Target>
+    <Target Name="UniDacDemo:Clean">
+        <MSBuild Projects="..\..\..\DELPHI-DEMOS\UniDAC for RAD Studio 10.3\Demos\UniDacDemo\UniDacDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UniDacDemo:Make">
+        <MSBuild Projects="..\..\..\DELPHI-DEMOS\UniDAC for RAD Studio 10.3\Demos\UniDacDemo\UniDacDemo.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ViaCEP;ProjectAPI;pkgViaCEP;ProjectViaCEPBasic"/>
+        <CallTarget Targets="ViaCEP;ProjectAPI;pkgViaCEP;ProjectViaCEPBasic;CreateConnection;UniDacDemo"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ViaCEP:Clean;ProjectAPI:Clean;pkgViaCEP:Clean;ProjectViaCEPBasic:Clean"/>
+        <CallTarget Targets="ViaCEP:Clean;ProjectAPI:Clean;pkgViaCEP:Clean;ProjectViaCEPBasic:Clean;CreateConnection:Clean;UniDacDemo:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ViaCEP:Make;ProjectAPI:Make;pkgViaCEP:Make;ProjectViaCEPBasic:Make"/>
+        <CallTarget Targets="ViaCEP:Make;ProjectAPI:Make;pkgViaCEP:Make;ProjectViaCEPBasic:Make;CreateConnection:Make;UniDacDemo:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

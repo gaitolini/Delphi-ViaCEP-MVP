@@ -3,7 +3,8 @@ unit model.cep;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Comp.Client, Data.DB, System.JSON, Xml.XMLDoc, Xml.XMLIntf;
+  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, System.Variants,Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs,
+  System.StrUtils, System.Math;
 
 type
   TCEPModel = class
@@ -16,18 +17,18 @@ type
     FUF: string;
     FEstado: string;
     FRegiao: string;
-    FIBGE: string;
-    FGIA: string;
-    FDDD: string;
-    FSIAFI: string;
-    FConnection: TFDConnection;
-    FQuery: TFDQuery;
+    FIBGE: Integer;
+    FGIA: Integer;
+    FDDD: Integer;
+    FSIAFI: Integer;
+    FConnection: TUniConnection;
+    FQuery: TUniQuery;
   public
-    constructor Create(AConnection: TFDConnection);
+    constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
 
     procedure LoadFromJSON(AJSON: TJSONObject);
-    procedure LoadFromXML(AXML: IXMLDocument);
+    procedure LoadFromXML(AXMLNode: IXMLNode);
     procedure SaveToDatabase;
     procedure LoadFromDatabase(ACEP: string);
 
@@ -39,18 +40,18 @@ type
     property UF: string read FUF write FUF;
     property Estado: string read FEstado write FEstado;
     property Regiao: string read FRegiao write FRegiao;
-    property IBGE: string read FIBGE write FIBGE;
-    property GIA: string read FGIA write FGIA;
-    property DDD: string read FDDD write FDDD;
-    property SIAFI: string read FSIAFI write FSIAFI;
+    property IBGE: Integer read FIBGE write FIBGE;
+    property GIA: Integer read FGIA write FGIA;
+    property DDD: Integer read FDDD write FDDD;
+    property SIAFI: Integer read FSIAFI write FSIAFI;
   end;
 
 implementation
 
-constructor TCEPModel.Create(AConnection: TFDConnection);
+constructor TCEPModel.Create(AConnection: TUniConnection);
 begin
   FConnection := AConnection;
-  FQuery := TFDQuery.Create(nil);
+  FQuery := TUniQuery.Create(nil);
   FQuery.Connection := FConnection;
 end;
 
@@ -62,34 +63,48 @@ end;
 
 procedure TCEPModel.LoadFromJSON(AJSON: TJSONObject);
 begin
-  FCEP := AJSON.GetValue<string>('cep');
-  FLogradouro := AJSON.GetValue<string>('logradouro');
-  FComplemento := AJSON.GetValue<string>('complemento');
-  FBairro := AJSON.GetValue<string>('bairro');
-  FLocalidade := AJSON.GetValue<string>('localidade');
-  FUF := AJSON.GetValue<string>('uf');
-  FEstado := AJSON.GetValue<string>('estado');
-  FRegiao := AJSON.GetValue<string>('regiao');
-  FIBGE := AJSON.GetValue<string>('ibge');
-  FGIA := AJSON.GetValue<string>('gia');
-  FDDD := AJSON.GetValue<string>('ddd');
-  FSIAFI := AJSON.GetValue<string>('siafi');
+  if AJSON = nil then
+    Exit;
+
+  if not AJSON.TryGetValue<string>('cep', FCEP) or (FCEP.Trim = '') then
+    Exit;
+
+  FCEP := FCEP.Replace('-', '');
+
+  FLogradouro := AJSON.GetValue<string>('logradouro', '');
+  FComplemento := AJSON.GetValue<string>('complemento', '');
+  FBairro := AJSON.GetValue<string>('bairro', '');
+  FLocalidade := AJSON.GetValue<string>('localidade', '');
+  FUF := AJSON.GetValue<string>('uf', '');
+  FEstado := AJSON.GetValue<string>('estado', '');
+  FRegiao := AJSON.GetValue<string>('regiao', '');
+  FIBGE := StrToIntDef(AJSON.GetValue<string>('ibge', ''), 0);
+  FGIA := StrToIntDef(AJSON.GetValue<string>('gia', ''), 0);
+  FDDD := StrToIntDef(AJSON.GetValue<string>('ddd', ''), 0);
+  FSIAFI := StrToIntDef(AJSON.GetValue<string>('siafi', ''), 0);
 end;
 
-procedure TCEPModel.LoadFromXML(AXML: IXMLDocument);
+procedure TCEPModel.LoadFromXML(AXMLNode: IXMLNode);
 begin
-  FCEP := AXML.DocumentElement.ChildNodes['cep'].Text;
-  FLogradouro := AXML.DocumentElement.ChildNodes['logradouro'].Text;
-  FComplemento := AXML.DocumentElement.ChildNodes['complemento'].Text;
-  FBairro := AXML.DocumentElement.ChildNodes['bairro'].Text;
-  FLocalidade := AXML.DocumentElement.ChildNodes['localidade'].Text;
-  FUF := AXML.DocumentElement.ChildNodes['uf'].Text;
-  FEstado := AXML.DocumentElement.ChildNodes['estado'].Text;
-  FRegiao := AXML.DocumentElement.ChildNodes['regiao'].Text;
-  FIBGE := AXML.DocumentElement.ChildNodes['ibge'].Text;
-  FGIA := AXML.DocumentElement.ChildNodes['gia'].Text;
-  FDDD := AXML.DocumentElement.ChildNodes['ddd'].Text;
-  FSIAFI := AXML.DocumentElement.ChildNodes['siafi'].Text;
+  if (AXMLNode = nil) or (AXMLNode.IsTextElement) then
+    Exit;
+
+  if VarIsNull(AXMLNode.ChildValues['cep']) or VarIsEmpty(AXMLNode.ChildValues['cep']) then
+    Exit;
+
+  FCEP := VarToStr(AXMLNode.ChildValues['cep']).Replace('-','');
+  FLogradouro := VarToStr(AXMLNode.ChildValues['logradouro']);
+  FComplemento := VarToStr(AXMLNode.ChildValues['complemento']);
+  FBairro := VarToStr(AXMLNode.ChildValues['bairro']);
+  FLocalidade := VarToStr(AXMLNode.ChildValues['localidade']);
+  FUF := VarToStr(AXMLNode.ChildValues['uf']);
+  FEstado := VarToStr(AXMLNode.ChildValues['estado']);
+  FRegiao := VarToStr(AXMLNode.ChildValues['regiao']);
+
+  FIBGE := StrToIntDef(VarToStr(AXMLNode.ChildValues['ibge']), 0);
+  FGIA := StrToIntDef(VarToStr(AXMLNode.ChildValues['gia']), 0);
+  FDDD := StrToIntDef(VarToStr(AXMLNode.ChildValues['ddd']), 0);
+  FSIAFI := StrToIntDef(VarToStr(AXMLNode.ChildValues['siafi']), 0);
 end;
 
 procedure TCEPModel.SaveToDatabase;
@@ -97,7 +112,8 @@ begin
   FQuery.SQL.Text :=
     'INSERT INTO ceps (cep, logradouro, complemento, bairro, localidade, uf, estado, regiao, ibge, gia, ddd, siafi) ' +
     'VALUES (:cep, :logradouro, :complemento, :bairro, :localidade, :uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)';
-  FQuery.ParamByName('cep').AsString := FCEP;
+
+  FQuery.ParamByName('cep').AsString := FCEP.Replace('-', '');;
   FQuery.ParamByName('logradouro').AsString := FLogradouro;
   FQuery.ParamByName('complemento').AsString := FComplemento;
   FQuery.ParamByName('bairro').AsString := FBairro;
@@ -105,10 +121,11 @@ begin
   FQuery.ParamByName('uf').AsString := FUF;
   FQuery.ParamByName('estado').AsString := FEstado;
   FQuery.ParamByName('regiao').AsString := FRegiao;
-  FQuery.ParamByName('ibge').AsString := FIBGE;
-  FQuery.ParamByName('gia').AsString := FGIA;
-  FQuery.ParamByName('ddd').AsString := FDDD;
-  FQuery.ParamByName('siafi').AsString := FSIAFI;
+  FQuery.ParamByName('ibge').AsInteger := FIBGE;
+  FQuery.ParamByName('gia').AsInteger := FGIA;
+  FQuery.ParamByName('ddd').AsInteger := FDDD;
+  FQuery.ParamByName('siafi').AsInteger := FSIAFI;
+
   FQuery.ExecSQL;
 end;
 
@@ -118,7 +135,7 @@ begin
   FQuery.ParamByName('pcep').AsString := ACEP;
   FQuery.Open;
 
-  FCEP := FQuery.FieldByName('cep').AsString;
+  FCEP := FQuery.FieldByName('cep').AsString.Replace('-', '');
   FLogradouro := FQuery.FieldByName('logradouro').AsString;
   FComplemento := FQuery.FieldByName('complemento').AsString;
   FBairro := FQuery.FieldByName('bairro').AsString;
@@ -126,10 +143,10 @@ begin
   FUF := FQuery.FieldByName('uf').AsString;
   FEstado := FQuery.FieldByName('estado').AsString;
   FRegiao := FQuery.FieldByName('regiao').AsString;
-  FIBGE := FQuery.FieldByName('ibge').AsString;
-  FGIA := FQuery.FieldByName('gia').AsString;
-  FDDD := FQuery.FieldByName('ddd').AsString;
-  FSIAFI := FQuery.FieldByName('siafi').AsString;
+  FIBGE := FQuery.FieldByName('ibge').AsInteger;
+  FGIA := FQuery.FieldByName('gia').AsInteger;
+  FDDD := FQuery.FieldByName('ddd').AsInteger;
+  FSIAFI := FQuery.FieldByName('siafi').AsInteger;
 end;
 
 end.
