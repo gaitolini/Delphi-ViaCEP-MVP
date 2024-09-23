@@ -26,8 +26,6 @@ type
     actlstConsultaCEP: TActionList;
     ilConsultaCEP: TImageList;
     actConsultarCep: TAction;
-    actSaveAsJSON: TFileSaveAs;
-    actSaveAsXML: TFileSaveAs;
     pnl1: TPanel;
     dbgEndereco: TDBGrid;
     pnlMenu: TPanel;
@@ -40,8 +38,6 @@ type
     btnNavDB_Last: TButton;
     btnNavDB_Delete: TButton;
     btnNavDB_Refresh: TButton;
-    btnSaveJSON: TButton;
-    btnSaveAsXML: TButton;
     DatasetFirst1: TDataSetFirst;
     DatasetPrior1: TDataSetPrior;
     DatasetNext1: TDataSetNext;
@@ -64,7 +60,6 @@ type
     qryViacepddd: TIntegerField;
     qryViacepsiafi: TIntegerField;
     statConsultaCEP: TStatusBar;
-    InternetBrowseURL1: TBrowseURL;
     procedure FormCreate(Sender: TObject);
     procedure actConsultarCepExecute(Sender: TObject);
     procedure edtLocationKeyDown(Sender: TObject; var Key: Word;

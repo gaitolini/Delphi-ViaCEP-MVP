@@ -7,16 +7,17 @@ inherited viewMain: TviewMain
     Top = 38
     Width = 828
     Height = 566
-    ExplicitLeft = 200
+    ExplicitLeft = 50
     ExplicitTop = 38
-    ExplicitWidth = 678
+    ExplicitWidth = 828
     ExplicitHeight = 566
     inherited sbxContent: TScrollBox
       Top = 24
       Width = 828
       Height = 508
       ParentColor = False
-      ExplicitWidth = 678
+      ExplicitTop = 24
+      ExplicitWidth = 828
       ExplicitHeight = 508
       object imgWallPapper: TSkAnimatedImage
         Left = 0
@@ -26,7 +27,6 @@ inherited viewMain: TviewMain
         Align = alClient
         PopupMenu = pmMainMenus
         Animation.Loop = False
-        ExplicitWidth = 678
         Data = {
           7B2276223A22352E372E36222C226672223A33302C226970223A302C226F7022
           3A3135302C2277223A3630302C2268223A3630302C226E6D223A22526F636B65
@@ -1409,14 +1409,14 @@ inherited viewMain: TviewMain
       Top = 532
       Width = 828
       ExplicitTop = 532
-      ExplicitWidth = 678
+      ExplicitWidth = 828
       inherited pnlTipLine: TPanel
         Width = 828
-        ExplicitWidth = 678
+        ExplicitWidth = 828
       end
       inherited pnlTipContent: TPanel
         Width = 800
-        ExplicitWidth = 613
+        ExplicitWidth = 800
         inherited lblTipDescription: TSkLabel
           Width = 800
           ExplicitWidth = 613
@@ -1426,7 +1426,7 @@ inherited viewMain: TviewMain
     inherited pnlTitle: TPanel
       Width = 828
       Height = 24
-      ExplicitWidth = 678
+      ExplicitWidth = 828
       ExplicitHeight = 24
       inherited lblTitle: TSkLabel
         Width = 785
@@ -1444,7 +1444,7 @@ inherited viewMain: TviewMain
         Left = 785
         Width = 43
         Height = 24
-        ExplicitLeft = 635
+        ExplicitLeft = 785
         ExplicitWidth = 43
         ExplicitHeight = 24
         inherited imgCloseFormAction: TSkAnimatedImage
@@ -1488,7 +1488,6 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
-      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A3131302E36393939393939393939393939392C2277223A3433302C226822
@@ -1910,8 +1909,6 @@ inherited viewMain: TviewMain
       OnMouseUp = imgMenuMain_LayoutMouseUp
       Animation.Enabled = False
       WrapMode = Place
-      ExplicitTop = 466
-      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31302E32222C226672223A36302C226970223A302C226F70
         223A3132302C2277223A3433302C2268223A3433302C226E6D223A2277697265
@@ -2646,8 +2643,6 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
-      ExplicitTop = 516
-      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A36302C2277223A3433302C2268223A3433302C226E6D223A227769726564

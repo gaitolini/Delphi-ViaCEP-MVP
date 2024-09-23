@@ -9,10 +9,12 @@ inherited ViewConsultaCEP: TViewConsultaCEP
   inherited pnlContent: TPanel
     Width = 888
     Height = 605
+    ExplicitWidth = 888
     ExplicitHeight = 605
     inherited sbxContent: TScrollBox
       Width = 888
       Height = 541
+      ExplicitWidth = 888
       ExplicitHeight = 541
       object pnl1: TPanel
         Left = 0
@@ -23,7 +25,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
         Caption = 'pnl1'
         ShowCaption = False
         TabOrder = 0
-        ExplicitWidth = 878
         object dbgEndereco: TDBGrid
           AlignWithMargins = True
           Left = 4
@@ -93,7 +94,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
           Caption = 'pnlMenu'
           ShowCaption = False
           TabOrder = 1
-          ExplicitWidth = 876
           object rgTipo: TRadioGroup
             AlignWithMargins = True
             Left = 1
@@ -136,6 +136,7 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             TextHint = 'Digite: UF, Cidade, Logradouro ou CEP'
             OnChange = edtLocationChange
             OnKeyDown = edtLocationKeyDown
+            ExplicitHeight = 33
           end
           object btnInsert: TButton
             AlignWithMargins = True
@@ -151,7 +152,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 2
-            ExplicitLeft = 459
           end
           object btnNavDB_Prior: TButton
             AlignWithMargins = True
@@ -168,7 +168,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 3
-            ExplicitLeft = 608
           end
           object btnNavDB_First: TButton
             AlignWithMargins = True
@@ -185,7 +184,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 4
-            ExplicitLeft = 572
           end
           object btnNavDB_Next: TButton
             AlignWithMargins = True
@@ -202,7 +200,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 5
-            ExplicitLeft = 644
           end
           object btnNavDB_Last: TButton
             AlignWithMargins = True
@@ -219,7 +216,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 6
-            ExplicitLeft = 680
           end
           object btnNavDB_Delete: TButton
             AlignWithMargins = True
@@ -236,7 +232,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 7
-            ExplicitLeft = 716
           end
           object btnNavDB_Refresh: TButton
             AlignWithMargins = True
@@ -253,41 +248,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             ParentShowHint = False
             ShowHint = True
             TabOrder = 8
-            ExplicitLeft = 752
-          end
-          object btnSaveJSON: TButton
-            AlignWithMargins = True
-            Left = 812
-            Top = 3
-            Width = 34
-            Height = 45
-            Margins.Left = 1
-            Margins.Right = 1
-            Action = actSaveAsJSON
-            Align = alLeft
-            ImageAlignment = iaCenter
-            Images = ilConsultaCEP
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 9
-            ExplicitLeft = 788
-          end
-          object btnSaveAsXML: TButton
-            AlignWithMargins = True
-            Left = 848
-            Top = 3
-            Width = 34
-            Height = 45
-            Margins.Left = 1
-            Margins.Right = 1
-            Action = actSaveAsXML
-            Align = alLeft
-            ImageAlignment = iaCenter
-            Images = ilConsultaCEP
-            ParentShowHint = False
-            ShowHint = True
-            TabOrder = 10
-            ExplicitLeft = 824
           end
         end
         object statConsultaCEP: TStatusBar
@@ -308,8 +268,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
             item
               Width = 50
             end>
-          ExplicitLeft = 0
-          ExplicitTop = 499
         end
       end
     end
@@ -317,18 +275,24 @@ inherited ViewConsultaCEP: TViewConsultaCEP
       Top = 571
       Width = 888
       ExplicitTop = 571
+      ExplicitWidth = 888
       inherited pnlTipLine: TPanel
         Width = 888
+        ExplicitWidth = 888
       end
       inherited pnlTipContent: TPanel
         Width = 860
+        ExplicitLeft = 14
+        ExplicitWidth = 860
         inherited lblTipDescription: TSkLabel
           Width = 860
+          ExplicitWidth = 860
         end
       end
     end
     inherited pnlTitle: TPanel
       Width = 888
+      ExplicitWidth = 888
       inherited lblTitle: TSkLabel
         Width = 839
         Words = <
@@ -339,9 +303,11 @@ inherited ViewConsultaCEP: TViewConsultaCEP
           end>
         ExplicitLeft = -6
         ExplicitTop = -2
+        ExplicitWidth = 839
       end
       inherited pnlBack: TPanel
         Left = 839
+        ExplicitLeft = 839
       end
     end
   end
@@ -354,17 +320,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
       Caption = 'Consulta CEP'
       ImageIndex = 6
       OnExecute = actConsultarCepExecute
-    end
-    object actSaveAsJSON: TFileSaveAs
-      Category = 'File'
-      Hint = 'Salvar arquivo em formato JSON'
-      ImageIndex = 7
-      ShortCut = 16458
-    end
-    object actSaveAsXML: TFileSaveAs
-      Category = 'File'
-      Hint = 'Salvar arquivo em formato XML'
-      ImageIndex = 8
     end
     object DatasetFirst1: TDataSetFirst
       Category = 'Dataset'
@@ -407,12 +362,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
       ImageIndex = 5
       ShortCut = 16466
       DataSource = dsViacep
-    end
-    object InternetBrowseURL1: TBrowseURL
-      Category = 'Internet'
-      Caption = 'Github'
-      Hint = 'Acesse meu github'
-      URL = 'https://github.com/gaitolini'
     end
   end
   object ilConsultaCEP: TImageList

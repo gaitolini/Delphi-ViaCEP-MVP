@@ -19,6 +19,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.Title := 'Consulta CEP';
   Application.CreateForm(Tdm, dm);
   Application.CreateForm(TviewMain, viewMain);
   Application.Run;

@@ -96,8 +96,8 @@ object Form1: TForm1
       Width = 475
       Height = 219
       Align = alClient
+      ScrollBars = ssBoth
       TabOrder = 1
-      ExplicitTop = 3
     end
   end
   object ViaCEPClient1: TViaCEPClient
