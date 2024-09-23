@@ -154,7 +154,7 @@ begin
       Formato := tfXML;
 
     Controller.ConsultaCEP(InputStr, Formato,
-      function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>): Boolean
+      function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>; IsCEPGeneral: Boolean): Boolean
       var
         Option: Integer;
       begin
@@ -168,12 +168,24 @@ begin
         end
         else
         begin
-          Option := MessageDlg(Msg, mtConfirmation, [mbYes, mbNo], 0);
-          if Option = mrYes then
-            Result := True
-          else
-            Result := False;
+          Option := MessageDlg(Msg, mtConfirmation, [mbOK], 0);
+          Result := True
         end;
+
+        if IsCEPGeneral then
+        begin
+            InputStr := Trim(Self.edtLocation.Text);
+
+            if not TryStrToInt(InputStr, InputInt) then
+            begin
+              Parts := InputStr.Split([',']);
+              if (Length(Parts[0]) = 2) and (Length(Parts[1]) >= 3) and (Length(Parts[2]) >= 3) then
+              begin
+                Self.edtLocation.Text := Parts[0]+', '+Parts[1];
+              end;
+            end;
+        end;
+
       end, ErroAPI);
 
     if ErroAPI.HasError then

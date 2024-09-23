@@ -1892,17 +1892,16 @@ inherited viewMain: TviewMain
           end>
         ExplicitLeft = -6
         ExplicitTop = -6
-        ExplicitWidth = 200
       end
     end
     object imgMenuMain_Layout: TSkAnimatedImage
       Left = 0
-      Top = 466
+      Top = 50
       Width = 50
       Height = 50
       Cursor = crHandPoint
       Hint = 'Layout da tela'
-      Align = alBottom
+      Align = alTop
       ParentShowHint = False
       ShowHint = True
       OnClick = imgMenuMain_LayoutClick
@@ -1911,6 +1910,7 @@ inherited viewMain: TviewMain
       OnMouseUp = imgMenuMain_LayoutMouseUp
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitTop = 466
       ExplicitWidth = 200
       Data = {
         7B2276223A22352E31302E32222C226672223A36302C226970223A302C226F70
@@ -2633,12 +2633,12 @@ inherited viewMain: TviewMain
     end
     object imgMenuMain_Picture: TSkAnimatedImage
       Left = 0
-      Top = 516
+      Top = 100
       Width = 50
       Height = 50
       Cursor = crHandPoint
       Hint = 'Altera anima'#231#227'o de fundo'
-      Align = alBottom
+      Align = alTop
       ParentShowHint = False
       ShowHint = True
       OnClick = imgMenuMain_PictureClick
@@ -2646,6 +2646,7 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitTop = 516
       ExplicitWidth = 200
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
@@ -4449,7 +4450,6 @@ inherited viewMain: TviewMain
         Width = 50
         Height = 50
         Align = alClient
-        OnClick = sklblMenuMain_PictureClick
         OnMouseEnter = sklblMenuMain_PictureMouseEnter
         TextSettings.Font.Size = 16.000000000000000000
         TextSettings.Font.Weight = Semibold
@@ -4462,7 +4462,6 @@ inherited viewMain: TviewMain
             StyledSettings = [Family, Size, Style]
           end>
         ExplicitLeft = -3
-        ExplicitWidth = 200
       end
     end
   end

@@ -13,7 +13,6 @@ inherited ViewConsultaCEP: TViewConsultaCEP
     inherited sbxContent: TScrollBox
       Width = 888
       Height = 541
-      ExplicitTop = 30
       ExplicitHeight = 541
       object pnl1: TPanel
         Left = 0
@@ -322,9 +321,9 @@ inherited ViewConsultaCEP: TViewConsultaCEP
         Width = 888
       end
       inherited pnlTipContent: TPanel
-        Width = 823
+        Width = 860
         inherited lblTipDescription: TSkLabel
-          Width = 823
+          Width = 860
         end
       end
     end
