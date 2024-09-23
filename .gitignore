@@ -69,3 +69,5 @@ __recovery/
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
+project/Win32/Debug/sk4d.dll
+project/Win32/Release/sk4d.dll
