@@ -101,7 +101,7 @@ var
 implementation
 
 uses
-  view.layout, view.buscacep, view.endereco, datamodule.viacep;
+  view.layout, view.consultacep, view.endereco, datamodule.viacep;
 
 {$R *.dfm}
 
@@ -186,7 +186,7 @@ end;
 procedure TviewMain.imgMenuMain_CEPClick(Sender: TObject);
 begin
   inherited;
-  ChildForm<TviewBuscaCEP>(False).Show;
+  ChildForm<TviewConsultaCEP>(False).Show;
   TSkAnimatedImage(Sender).Animation.Stop;
 end;
 
@@ -262,7 +262,7 @@ end;
 procedure TviewMain.sklblMenuMain_CEPClick(Sender: TObject);
 begin
   inherited;
-  ChildForm<TviewBuscaCEP>(False).Show;
+  ChildForm<TviewConsultaCEP>(False).Show;
   if SV.Opened and FCloseOnMenuClick then
     SV.Close;
 end;

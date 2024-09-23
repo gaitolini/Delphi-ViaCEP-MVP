@@ -16,7 +16,6 @@ inherited viewMain: TviewMain
       Width = 678
       Height = 508
       ParentColor = False
-      ExplicitTop = 24
       ExplicitWidth = 678
       ExplicitHeight = 508
       object imgWallPapper: TSkAnimatedImage

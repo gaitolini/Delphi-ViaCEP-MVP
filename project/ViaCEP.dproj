@@ -117,7 +117,7 @@
             <Form>viewBase</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\src\views\view.buscacep.pas">
+        <DCCReference Include="..\src\views\view.consultacep.pas">
             <Form>viewBuscaCEP</Form>
             <FormType>dfm</FormType>
         </DCCReference>

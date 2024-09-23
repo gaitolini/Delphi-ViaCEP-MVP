@@ -22,7 +22,6 @@ type
     FService: TViaCEPService;
     FDAO: TCEPDAO;
     function GetDAO: TCEPDAO;
-    function ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean; out Erro: TErroAPI): TList<TCEPModel>;
   public
     constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
@@ -30,6 +29,7 @@ type
     procedure InsertEndereco(Endereco: TCEPModel);
     procedure UpdateEndereco(Endereco: TCEPModel);
     function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
+    function ConsultarCEP_WS(const aInput: string; AFormatoJSON: Boolean; out Erro: TErroAPI): TList<TCEPModel>;
     procedure ConsultaCEP(const aInput: string; aFormato: TFormato; ValidaCEP: TValidaCEP; out Erro: TErroAPI);
     procedure CarregarCEPDoBanco(ACEP: string);
     property DAO: TCEPDAO read GetDAO;
@@ -89,7 +89,7 @@ begin
 
     if ExistEnderecoList.Count > 0 then
     begin
-      if not ValidaCEP('CEP já existente. Deseja atualizar os endereços?', ExistEnderecoList, nil) then
+      if not ValidaCEP('Endereço já existente. Deseja atualizar os endereços?', ExistEnderecoList, nil) then
       begin
         Exit;
       end;
@@ -130,8 +130,8 @@ begin
         InsertEndereco(Endereco1);
     end;
   finally
-    FreeAndNil(ExistEnderecoList);
-    FreeAndNil(EnderecoList);
+    ExistEnderecoList := nil;
+    EnderecoList := nil;
   end;
 end;
 

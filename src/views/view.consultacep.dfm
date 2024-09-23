@@ -960,7 +960,7 @@ inherited viewBuscaCEP: TviewBuscaCEP
       ') t')
     Connection = dm.conViacep
     SQL.Strings = (
-      'SELECT * FROM ceps')
+      'SELECT * FROM ceps order by cep asc')
     Left = 760
     Top = 176
     object qryViacepid: TIntegerField

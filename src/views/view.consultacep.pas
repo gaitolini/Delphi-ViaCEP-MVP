@@ -6,7 +6,7 @@
 {                                                       }
 {*******************************************************}
 
-unit view.buscacep;
+unit view.consultacep;
 
 interface
 
@@ -22,7 +22,7 @@ uses
   Uni, Vcl.ComCtrls;
 
 type
-  TviewBuscaCEP = class(TviewBase)
+  TviewConsultaCEP = class(TviewBase)
     actlstConsultaCEP: TActionList;
     ilConsultaCEP: TImageList;
     actConsultarCep: TAction;
@@ -72,15 +72,18 @@ type
     procedure dsViacepDataChange(Sender: TObject; Field: TField);
     procedure edtLocationChange(Sender: TObject);
   private
-    UltimaColuna: TColumn;
+    FUltimaColuna: TColumn;
     procedure OrdenaColuna(Column: TColumn);
+    function GetUltimaColuna: TColumn;
+    procedure SetUltimaColuna(const Value: TColumn);
     { Private declarations }
   public
     { Public declarations }
+    property  UltimaColuna: TColumn read GetUltimaColuna write SetUltimaColuna;
   end;
 
 var
-  viewBuscaCEP: TviewBuscaCEP;
+  viewBuscaCEP: TviewConsultaCEP;
 
 implementation
 
@@ -89,18 +92,44 @@ uses
 
 {$R *.dfm}
 
-procedure TviewBuscaCEP.actConsultarCepExecute(Sender: TObject);
+procedure TviewConsultaCEP.actConsultarCepExecute(Sender: TObject);
 var
   Controller: TCEPController;
   ErroAPI: TErroAPI;
   Formato: TFormato;
+  Parts: TArray<string>;
+  InputStr, UF, Localidade, Logradouro: string;
 begin
   inherited;
 
-  if Trim(edtLocation.Text) = '' then
+  InputStr := Trim(edtLocation.Text);
+  if (InputStr = EmptyStr) then
   begin
-    ShowMessage('Informe um valor válido!');
+    ShowMessage('Informe um valor!');
     Exit;
+  end;
+
+  Parts := InputStr.Split([',']);
+
+  UF := Trim(Parts[0]);
+  if (Length(UF) <> 2) then
+  begin
+    MessageDlg('O Campo UF é esperado apenas 2 letras.', mtInformation, [mbOK], 0);
+    Abort;
+  end;
+
+  Localidade := Parts[1];
+  if (Length(Localidade) < 3) then
+  begin
+    MessageDlg('O Campo Localidade é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+    Abort;
+  end;
+
+  Logradouro := Parts[2];
+  if (Length(Logradouro) < 3) then
+  begin
+    MessageDlg('O Campo Logradouro é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+    Abort;
   end;
 
   Controller := TCEPController.Create(dm.conViacep);
@@ -110,7 +139,7 @@ begin
     else
       Formato := tfXML;
 
-    Controller.ConsultaCEP(edtLocation.Text, Formato,
+    Controller.ConsultaCEP(InputStr, Formato,
       function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>): Boolean
       var
         Option: Integer;
@@ -135,7 +164,7 @@ begin
 
     if ErroAPI.HasError then
     begin
-      ShowMessage(Format('Erro [%d]: %s', [ErroAPI.StatusCode, ErroAPI.Msg]));
+      ShowMessage(Format('Erro: %s', [ErroAPI.Msg]));
     end;
 
     qryViacep.Refresh;
@@ -145,18 +174,18 @@ begin
   end;
 end;
 
-procedure TviewBuscaCEP.dbgEnderecoTitleClick(Column: TColumn);
+procedure TviewConsultaCEP.dbgEnderecoTitleClick(Column: TColumn);
 begin
   OrdenaColuna(Column);
 end;
 
-procedure TviewBuscaCEP.dsViacepDataChange(Sender: TObject; Field: TField);
+procedure TviewConsultaCEP.dsViacepDataChange(Sender: TObject; Field: TField);
 begin
   inherited;
   statConsultaCEP.Panels[1].Text := Format('%0000000d',[qryViacep.RecordCount]);
 end;
 
-procedure TviewBuscaCEP.OrdenaColuna(Column: TColumn);
+procedure TviewConsultaCEP.OrdenaColuna(Column: TColumn);
 var
   lFieldName: string;
   lOrderBy: string;
@@ -191,7 +220,12 @@ end;
 
 
 
-procedure TviewBuscaCEP.edtLocationChange(Sender: TObject);
+procedure TviewConsultaCEP.SetUltimaColuna(const Value: TColumn);
+begin
+  FUltimaColuna := Value;
+end;
+
+procedure TviewConsultaCEP.edtLocationChange(Sender: TObject);
 var
   Input: string;
   IsCEP: Boolean;
@@ -230,34 +264,35 @@ begin
       case Length(Parts) of
         1:
           begin
-            qryViacep.SQL.Text := SQLBase + 'UPPER(uf) LIKE UPPER(:pUF) ORDER BY uf ASC';
+            qryViacep.SQL.Text := SQLBase + 'UPPER(uf) LIKE UPPER(:pUF) ORDER BY '+ UltimaColuna.FieldName +' ASC';
             qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
 
-            if Length(Trim(Parts[0])) = 2 then
+            if (Length(Trim(Parts[0])) = 2) then
             begin
-              edtLocation.Text := Trim(Parts[0]) + ', ';
+              edtLocation.Text := Trim(Parts[0]);
               edtLocation.SelStart := Length(edtLocation.Text); // Posiciona o cursor no final
             end;
           end;
         2:
           begin
             qryViacep.SQL.Text := SQLBase +
-              'UPPER(uf) LIKE UPPER(:pUF) AND UPPER(localidade) LIKE UPPER(:pLocalidade) ORDER BY localidade ASC';
-            qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
-            qryViacep.ParamByName('pLocalidade').AsString := Trim(Parts[1]) + '%';
+              'UPPER(uf) LIKE UPPER(:pUF) AND unaccent(LOWER(localidade)) LIKE unaccent(LOWER(:pLocalidade)) ORDER BY '+ UltimaColuna.FieldName +' ASC';
+            qryViacep.ParamByName('pUF').AsString := '%'+ Trim(Parts[0]) + '%';
+            qryViacep.ParamByName('pLocalidade').AsString := '%'+ Trim(Parts[1]) + '%';
           end;
         3:
           begin
             qryViacep.SQL.Text := SQLBase +
               'UPPER(uf) LIKE UPPER(:pUF) AND ' +
-              'UPPER(localidade) LIKE UPPER(:pLocalidade) AND ' +
-              'UPPER(logradouro) LIKE UPPER(:pLogradouro) ORDER BY logradouro ASC';
+              'unaccent(LOWER(localidade)) LIKE unaccent(LOWER(:pLocalidade)) AND ' +
+              'unaccent(LOWER(logradouro)) LIKE unaccent(LOWER(:pLogradouro)) ORDER BY '+ UltimaColuna.FieldName +' ASC';
+
             qryViacep.ParamByName('pUF').AsString := Trim(Parts[0]) + '%';
-            qryViacep.ParamByName('pLocalidade').AsString := Trim(Parts[1]) + '%';
-            qryViacep.ParamByName('pLogradouro').AsString := Trim(Parts[2]) + '%';
+            qryViacep.ParamByName('pLocalidade').AsString := '%'+ Trim(Parts[1]) + '%';
+            qryViacep.ParamByName('pLogradouro').AsString := '%'+ Trim(Parts[2]) + '%';
           end;
       else
-        qryViacep.SQL.Text := 'SELECT * FROM ceps ORDER BY cep ASC';
+        qryViacep.SQL.Text := 'SELECT * FROM ceps ORDER BY '+ UltimaColuna.FieldName +' ASC';
       end;
     end;
 
@@ -267,7 +302,7 @@ begin
   end;
 end;
 
-procedure TviewBuscaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
+procedure TviewConsultaCEP.edtLocationKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   inherited;
@@ -275,12 +310,22 @@ begin
     actConsultarCepExecute(nil);
 end;
 
-procedure TviewBuscaCEP.FormCreate(Sender: TObject);
+procedure TviewConsultaCEP.FormCreate(Sender: TObject);
 begin
   inherited;
   qryViacep.Active := True;
   UltimaColuna := dbgEndereco.Columns[0];
   OrdenaColuna(UltimaColuna);
+end;
+
+function TviewConsultaCEP.GetUltimaColuna: TColumn;
+begin
+  if not Assigned(FUltimaColuna) then
+  begin
+    FUltimaColuna := dbgEndereco.Columns[0];
+  end;
+
+  Result := FUltimaColuna;
 end;
 
 end.

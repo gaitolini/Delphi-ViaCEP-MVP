@@ -99,8 +99,8 @@ begin
       raise Exception.Create('O formato para consulta por endereço é UF, Cidade, Logradouro.');
 
     UF := Parts[0].Trim;
-    Localidade := Parts[1].Trim;
-    Logradouro := Parts[2].Trim;
+    Localidade := Parts[1];
+    Logradouro := Parts[2];
 
     FQuery.SQL.Text := 'SELECT * FROM ceps WHERE UPPER(uf) = UPPER(:puf) AND unaccent(LOWER(localidade)) LIKE ''%'' || unaccent(LOWER(TRIM(:pLocalidade))) || ''%'' AND unaccent(LOWER(logradouro)) LIKE ''%'' || unaccent(LOWER(TRIM(:plogradouro))) ||  ''%''';
     FQuery.ParamByName('puf').AsString := UF;
