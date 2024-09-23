@@ -89,11 +89,9 @@ begin
   if (AXMLNode = nil) or (AXMLNode.IsTextElement) then
     Exit;
 
-  // Verifica se o campo 'cep' está nulo ou vazio e retorna se não existir
   if VarIsNull(AXMLNode.ChildValues['cep']) or VarIsEmpty(AXMLNode.ChildValues['cep']) then
     Exit;
 
-  // Utiliza VarToStr para garantir conversão segura
   FCEP := VarToStr(AXMLNode.ChildValues['cep']).Replace('-','');
   FLogradouro := VarToStr(AXMLNode.ChildValues['logradouro']);
   FComplemento := VarToStr(AXMLNode.ChildValues['complemento']);
@@ -103,15 +101,11 @@ begin
   FEstado := VarToStr(AXMLNode.ChildValues['estado']);
   FRegiao := VarToStr(AXMLNode.ChildValues['regiao']);
 
-  // Converte os valores numéricos usando StrToIntDef para garantir que nulos ou vazios se tornem 0
   FIBGE := StrToIntDef(VarToStr(AXMLNode.ChildValues['ibge']), 0);
   FGIA := StrToIntDef(VarToStr(AXMLNode.ChildValues['gia']), 0);
   FDDD := StrToIntDef(VarToStr(AXMLNode.ChildValues['ddd']), 0);
   FSIAFI := StrToIntDef(VarToStr(AXMLNode.ChildValues['siafi']), 0);
 end;
-
-
-
 
 procedure TCEPModel.SaveToDatabase;
 begin

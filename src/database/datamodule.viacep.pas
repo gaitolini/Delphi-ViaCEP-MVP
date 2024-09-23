@@ -25,7 +25,6 @@ type
     scrptDML: TUniScript;
   private
     { Private declarations }
-    procedure CreateDatabaseAndTables;
   public
     { Public declarations }
     procedure InitializeDatabase;
@@ -41,11 +40,6 @@ implementation
 {$R *.dfm}
 
 { Tdm }
-
-procedure Tdm.CreateDatabaseAndTables;
-begin
-  //
-end;
 
 procedure Tdm.InitializeDatabase;
 begin
