@@ -19,7 +19,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.Bind.Navigator, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdActns, datamodule.viacep,
   Vcl.DBActns, System.Generics.Collections, System.StrUtils, MemDS, DBAccess,
-  Uni, Vcl.ComCtrls, Vcl.ExtActns;
+  Uni, Vcl.ComCtrls, Vcl.ExtActns, System.UITypes;
 
 type
   TViewConsultaCEP = class(TviewBase)
@@ -94,21 +94,21 @@ var
   ErroAPI: TErroAPI;
   Formato: TFormato;
   Parts: TArray<string>;
-  InputStr, UF, Localidade, Logradouro: string;
-  InputInt: Integer;
+  InputString, UF, Localidade, Logradouro: string;
+  InputInt: Int64;
 begin
   inherited;
 
-  InputStr := Trim(edtLocation.Text);
-  if (InputStr = EmptyStr) then
+  InputString := Trim(edtLocation.Text);
+  if (InputString = EmptyStr) then
   begin
     MessageDlg('Informe um valor para pesquisar.', mtInformation, [mbOK], 0);
     Abort;
   end;
 
-  if TryStrToInt(InputStr, InputInt) then
+  if TryStrToInt64(InputString, InputInt) then
   begin
-     if Length(InputStr) <> 8 then
+     if Length(InputString) <> 8 then
      begin
        MessageDlg('Informe um CEP de 8 dígitos.', mtInformation, [mbOK], 0);
        Abort;
@@ -117,27 +117,36 @@ begin
   end
   else
   begin
-    Parts := InputStr.Split([',']);
+    Parts := InputString.Split([',']);
 
-    UF := Trim(Parts[0]);
-    if (Length(UF) <> 2) then
+    if (Length(Parts)>0) then
     begin
-      MessageDlg('O Campo UF é esperado apenas 2 letras.', mtInformation, [mbOK], 0);
-      Abort;
+      UF := Trim(Parts[0]);
+      if (Length(UF) <> 2) then
+      begin
+        MessageDlg('O Campo UF é esperado apenas 2 letras.', mtInformation, [mbOK], 0);
+        Abort;
+      end;
     end;
 
-    Localidade := Parts[1];
-    if (Length(Localidade) < 3) then
+    if (Length(Parts)>0) then
     begin
-      MessageDlg('O Campo Localidade é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
-      Abort;
+      Localidade := Parts[1];
+      if (Length(Localidade) < 3) then
+      begin
+        MessageDlg('O Campo Localidade é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+        Abort;
+      end;
     end;
 
-    Logradouro := Parts[2];
-    if (Length(Logradouro) < 3) then
+    if (Length(Parts)>0) then
     begin
-      MessageDlg('O Campo Logradouro é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
-      Abort;
+      Logradouro := Parts[2];
+      if (Length(Logradouro) < 3) then
+      begin
+        MessageDlg('O Campo Logradouro é esperado pelo menos 3 letras.', mtInformation, [mbOK], 0);
+        Abort;
+      end;
     end;
   end;
 
@@ -148,7 +157,7 @@ begin
     else
       Formato := tfXML;
 
-    Controller.ConsultaCEP(InputStr, Formato,
+    Controller.ConsultaCEP(InputString, Formato,
       function(const Msg: string; const CEPsExistentes, CEPsNovos: TList<TCEPModel>; IsCEPGeneral: Boolean): Boolean
       var
         Option: Integer;
@@ -169,11 +178,11 @@ begin
 
         if IsCEPGeneral then
         begin
-            InputStr := Trim(Self.edtLocation.Text);
+            InputString := Trim(Self.edtLocation.Text);
 
-            if not TryStrToInt(InputStr, InputInt) then
+            if not TryStrToInt64(InputString, InputInt) then
             begin
-              Parts := InputStr.Split([',']);
+              Parts := InputString.Split([',']);
               if (Length(Parts[0]) = 2) and (Length(Parts[1]) >= 3) and (Length(Parts[2]) >= 3) then
               begin
                 Self.edtLocation.Text := Parts[0]+', '+Parts[1];

@@ -1,3 +1,11 @@
+{*******************************************************}
+{                                                       }
+{       Anderson Gaitolini                              }
+{                                                       }
+{       Copyright (C) 2024 Gaitolini                    }
+{                                                       }
+{*******************************************************}
+
 unit dao.cep;
 
 interface
@@ -6,6 +14,7 @@ uses
   model.cep, Uni, Data.DB, System.SysUtils, System.Generics.Collections, utils.str;
 
 type
+  //2. Utilização de SOLID (Princípio da Responsabilidade Única)
   TCEPDAO = class
   private
     FConnection: TUniConnection;
@@ -15,6 +24,8 @@ type
   public
     constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
+
+    //6. Aplicação de Patterns (Data Access Object Pattern)
     procedure Insert(ACEPModel: TCEPModel);
     function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
     procedure Update(ACEPModel: TCEPModel);
@@ -60,6 +71,7 @@ end;
 
 procedure TCEPDAO.AtivaUnaccent;
 begin
+  //5. Utilização de Interfaces (Banco de Dados PostgreSQL com extensão Unaccent)
   FQuery.SQL.Clear;
   FQuery.SQL.Text := 'SELECT extname FROM pg_extension WHERE extname = :extname';
   FQuery.ParamByName('extname').AsString := 'unaccent';
@@ -104,6 +116,7 @@ begin
     Localidade := Parts[1];
     Logradouro := Parts[2];
 
+    //3. Utilização de POO
     FQuery.SQL.Text := 'SELECT * FROM ceps WHERE UPPER(uf) = UPPER(:puf) AND unaccent(LOWER(localidade)) LIKE ''%'' || unaccent(LOWER(TRIM(:pLocalidade))) || ''%'' AND unaccent(LOWER(logradouro)) LIKE ''%'' || unaccent(LOWER(TRIM(:plogradouro))) ||  ''%''';
     FQuery.ParamByName('puf').AsString := UF;
     FQuery.ParamByName('pLocalidade').AsString := LowerCase(Localidade);
@@ -114,7 +127,6 @@ begin
 
   while not FQuery.Eof do
   begin
-
     aCEPModel := TCEPModel.Create(nil);
     aCEPModel.CEP := FQuery.FieldByName('cep').AsString;
     aCEPModel.Logradouro := FQuery.FieldByName('logradouro').AsString;
@@ -180,4 +192,3 @@ begin
 end;
 
 end.
-

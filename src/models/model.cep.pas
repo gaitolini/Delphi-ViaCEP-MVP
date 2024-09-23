@@ -1,12 +1,21 @@
+{*******************************************************}
+{                                                       }
+{       Anderson Gaitolini                              }
+{                                                       }
+{       Copyright (C) 2024 Gaitolini                    }
+{                                                       }
+{*******************************************************}
+
 unit model.cep;
 
 interface
 
 uses
-  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, System.Variants,Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs,
+  System.SysUtils, System.Classes, Uni, Data.DB, System.JSON, System.Variants, Xml.XMLDoc, Xml.XMLIntf, Vcl.Dialogs,
   System.StrUtils, System.Math;
 
 type
+  //3. Utilização de POO
   TCEPModel = class
   private
     FCEP: string;
@@ -24,11 +33,17 @@ type
     FConnection: TUniConnection;
     FQuery: TUniQuery;
   public
+    //2. Utilização de SOLID (Princípio da Responsabilidade Única)
     constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
 
+    //4. Serialização e desserialização de objetos JSON
     procedure LoadFromJSON(AJSON: TJSONObject);
+
+    //4. Serialização e desserialização de objetos XML
     procedure LoadFromXML(AXMLNode: IXMLNode);
+
+    //6. Aplicação de Patterns (Active Record Pattern)
     procedure SaveToDatabase;
     procedure LoadFromDatabase(ACEP: string);
 
@@ -63,6 +78,7 @@ end;
 
 procedure TCEPModel.LoadFromJSON(AJSON: TJSONObject);
 begin
+  //4. Serialização e desserialização de objetos JSON
   if AJSON = nil then
     Exit;
 
@@ -86,6 +102,7 @@ end;
 
 procedure TCEPModel.LoadFromXML(AXMLNode: IXMLNode);
 begin
+  //4. Serialização e desserialização de objetos XML
   if (AXMLNode = nil) or (AXMLNode.IsTextElement) then
     Exit;
 
@@ -109,11 +126,12 @@ end;
 
 procedure TCEPModel.SaveToDatabase;
 begin
+  //6. Aplicação de Patterns (Active Record Pattern)
   FQuery.SQL.Text :=
     'INSERT INTO ceps (cep, logradouro, complemento, bairro, localidade, uf, estado, regiao, ibge, gia, ddd, siafi) ' +
     'VALUES (:cep, :logradouro, :complemento, :bairro, :localidade, :uf, :estado, :regiao, :ibge, :gia, :ddd, :siafi)';
 
-  FQuery.ParamByName('cep').AsString := FCEP.Replace('-', '');;
+  FQuery.ParamByName('cep').AsString := FCEP.Replace('-', '');
   FQuery.ParamByName('logradouro').AsString := FLogradouro;
   FQuery.ParamByName('complemento').AsString := FComplemento;
   FQuery.ParamByName('bairro').AsString := FBairro;
@@ -131,6 +149,7 @@ end;
 
 procedure TCEPModel.LoadFromDatabase(ACEP: string);
 begin
+  //6. Aplicação de Patterns (Active Record Pattern)
   FQuery.SQL.Text := 'SELECT * FROM ceps WHERE cep = :pcep';
   FQuery.ParamByName('pcep').AsString := ACEP;
   FQuery.Open;
@@ -150,4 +169,3 @@ begin
 end;
 
 end.
-
