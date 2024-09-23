@@ -11,12 +11,14 @@ type
     FConnection: TUniConnection;
     FQuery: TUniQuery;
     procedure AtivaUnaccent;
+
   public
     constructor Create(AConnection: TUniConnection);
     destructor Destroy; override;
     procedure Insert(ACEPModel: TCEPModel);
     function ConsultaCEP_DB(const aInput: string): TList<TCEPModel>;
     procedure Update(ACEPModel: TCEPModel);
+    function CEPGeralJaExiste(const aCEP, aUF, aLocalidade: string): Boolean;
   end;
 
 implementation
@@ -158,6 +160,23 @@ begin
   FQuery.ParamByName('siafi').AsInteger := ACEPModel.SIAFI;
 
   FQuery.ExecSQL;
+end;
+
+function TCEPDAO.CEPGeralJaExiste(const aCEP, aUF, aLocalidade: string): Boolean;
+begin
+  FQuery.SQL.Clear;
+  FQuery.SQL.Add('SELECT 1 FROM CEPS WHERE CEP = :PCEP');
+  FQuery.SQL.Add('AND UNACCENT(LOWER(UF)) = UNACCENT(LOWER(:PUF))');
+  FQuery.SQL.Add('AND UNACCENT(LOWER(LOCALIDADE)) = UNACCENT(LOWER(:PLOCALIDADE))');
+  FQuery.SQL.Add('AND (LOGRADOURO IS NULL OR LOGRADOURO = '''')');
+
+  FQuery.ParamByName('PCEP').AsString := aCEP;
+  FQuery.ParamByName('PUF').AsString := aUF;
+  FQuery.ParamByName('PLOCALIDADE').AsString := aLocalidade;
+  FQuery.Open;
+
+  Result := not FQuery.IsEmpty;
+  FQuery.Close;
 end;
 
 end.

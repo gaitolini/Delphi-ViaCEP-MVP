@@ -63,7 +63,6 @@ type
     lblTitle: TSkLabel;
     pnlBack: TPanel;
     pnlTip: TPanel;
-    svgTipIcon: TSkSvg;
     pnlTipLine: TPanel;
     pnlTipContent: TPanel;
     lblTipDescription: TSkLabel;

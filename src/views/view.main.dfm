@@ -1,12 +1,11 @@
 inherited viewMain: TviewMain
   Caption = 'Via CEP'
-  ExplicitTop = -175
   PixelsPerInch = 96
   TextHeight = 15
   inherited pnlContent: TPanel
-    Left = 200
+    Left = 50
     Top = 38
-    Width = 678
+    Width = 828
     Height = 566
     ExplicitLeft = 200
     ExplicitTop = 38
@@ -14,7 +13,7 @@ inherited viewMain: TviewMain
     ExplicitHeight = 566
     inherited sbxContent: TScrollBox
       Top = 24
-      Width = 678
+      Width = 828
       Height = 508
       ParentColor = False
       ExplicitWidth = 678
@@ -22,11 +21,12 @@ inherited viewMain: TviewMain
       object imgWallPapper: TSkAnimatedImage
         Left = 0
         Top = 21
-        Width = 678
+        Width = 828
         Height = 487
         Align = alClient
         PopupMenu = pmMainMenus
         Animation.Loop = False
+        ExplicitWidth = 678
         Data = {
           7B2276223A22352E372E36222C226672223A33302C226970223A302C226F7022
           3A3135302C2277223A3630302C2268223A3630302C226E6D223A22526F636B65
@@ -1407,29 +1407,29 @@ inherited viewMain: TviewMain
     end
     inherited pnlTip: TPanel
       Top = 532
-      Width = 678
+      Width = 828
       ExplicitTop = 532
       ExplicitWidth = 678
       inherited pnlTipLine: TPanel
-        Width = 678
+        Width = 828
         ExplicitWidth = 678
       end
       inherited pnlTipContent: TPanel
-        Width = 613
+        Width = 800
         ExplicitWidth = 613
         inherited lblTipDescription: TSkLabel
-          Width = 613
+          Width = 800
           ExplicitWidth = 613
         end
       end
     end
     inherited pnlTitle: TPanel
-      Width = 678
+      Width = 828
       Height = 24
       ExplicitWidth = 678
       ExplicitHeight = 24
       inherited lblTitle: TSkLabel
-        Width = 635
+        Width = 785
         Height = 24
         Words = <
           item
@@ -1441,7 +1441,7 @@ inherited viewMain: TviewMain
         ExplicitHeight = 33
       end
       inherited pnlBack: TPanel
-        Left = 635
+        Left = 785
         Width = 43
         Height = 24
         ExplicitLeft = 635
@@ -1463,10 +1463,11 @@ inherited viewMain: TviewMain
   object SV: TSplitView
     Left = 0
     Top = 38
-    Width = 200
+    Width = 50
     Height = 566
     CloseStyle = svcCompact
     Color = 4141614
+    Opened = False
     OpenedWidth = 200
     Placement = svpLeft
     TabOrder = 1
@@ -1475,10 +1476,10 @@ inherited viewMain: TviewMain
     object imgMenuMain_CEP: TSkAnimatedImage
       Left = 0
       Top = 0
-      Width = 200
+      Width = 50
       Height = 50
       Cursor = crHandPoint
-      Hint = 'Busca CEP'
+      Hint = 'Consulta CEP'
       Align = alTop
       ParentShowHint = False
       ShowHint = True
@@ -1487,6 +1488,7 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A3131302E36393939393939393939393939392C2277223A3433302C226822
@@ -1872,8 +1874,9 @@ inherited viewMain: TviewMain
       object sklblMenuMain_CEP: TSkLabel
         Left = 0
         Top = 0
-        Width = 200
+        Width = 50
         Height = 50
+        Hint = 'Consulta CEP'
         Align = alClient
         OnClick = sklblMenuMain_CEPClick
         OnMouseEnter = sklblMenuMain_CEPMouseEnter
@@ -1893,12 +1896,12 @@ inherited viewMain: TviewMain
     end
     object imgMenuMain_Layout: TSkAnimatedImage
       Left = 0
-      Top = 466
-      Width = 200
+      Top = 50
+      Width = 50
       Height = 50
       Cursor = crHandPoint
       Hint = 'Layout da tela'
-      Align = alBottom
+      Align = alTop
       ParentShowHint = False
       ShowHint = True
       OnClick = imgMenuMain_LayoutClick
@@ -1907,6 +1910,8 @@ inherited viewMain: TviewMain
       OnMouseUp = imgMenuMain_LayoutMouseUp
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitTop = 466
+      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31302E32222C226672223A36302C226970223A302C226F70
         223A3132302C2277223A3433302C2268223A3433302C226E6D223A2277697265
@@ -2606,7 +2611,7 @@ inherited viewMain: TviewMain
       object sklblMenuMain_layout: TSkLabel
         Left = 0
         Top = 0
-        Width = 200
+        Width = 50
         Height = 50
         Align = alClient
         OnClick = sklblMenuMain_layoutClick
@@ -2623,16 +2628,17 @@ inherited viewMain: TviewMain
           end>
         ExplicitLeft = -6
         ExplicitTop = -6
+        ExplicitWidth = 200
       end
     end
     object imgMenuMain_Picture: TSkAnimatedImage
       Left = 0
-      Top = 516
-      Width = 200
+      Top = 100
+      Width = 50
       Height = 50
       Cursor = crHandPoint
       Hint = 'Altera anima'#231#227'o de fundo'
-      Align = alBottom
+      Align = alTop
       ParentShowHint = False
       ShowHint = True
       OnClick = imgMenuMain_PictureClick
@@ -2640,6 +2646,8 @@ inherited viewMain: TviewMain
       OnMouseLeave = imgMenuMain_GenericMouseLeave
       Animation.Enabled = False
       WrapMode = Place
+      ExplicitTop = 516
+      ExplicitWidth = 200
       Data = {
         7B2276223A22352E31322E31222C226672223A36302C226970223A302C226F70
         223A36302C2277223A3433302C2268223A3433302C226E6D223A227769726564
@@ -4439,10 +4447,9 @@ inherited viewMain: TviewMain
       object sklblMenuMain_Picture: TSkLabel
         Left = 0
         Top = 0
-        Width = 200
+        Width = 50
         Height = 50
         Align = alClient
-        OnClick = sklblMenuMain_PictureClick
         OnMouseEnter = sklblMenuMain_PictureMouseEnter
         TextSettings.Font.Size = 16.000000000000000000
         TextSettings.Font.Weight = Semibold
@@ -4450,7 +4457,7 @@ inherited viewMain: TviewMain
         TextSettings.HorzAlign = Center
         Words = <
           item
-            Caption = 'Trocar anima'#231#227'o'
+            Caption = 'Wallpaper'
             FontColor = claAliceblue
             StyledSettings = [Family, Size, Style]
           end>
@@ -4722,10 +4729,10 @@ inherited viewMain: TviewMain
     end
     object actAbrirLottie: TFileOpen
       Category = 'File'
-      Caption = '&Open...'
+      Caption = '&Abrir'
       Dialog.DefaultExt = '.json'
-      Dialog.Filter = 'Lottie JSON|*.json|SVG|*.svg'
-      Dialog.Title = 'Escolha um Lottie ou SVG'
+      Dialog.Filter = 'Lottie JSON|*.json'
+      Dialog.Title = 'Escolha um Lottie.json'
       Hint = 'Open|Opens an existing file'
       ImageIndex = 11
       ShortCut = 16463

@@ -71,7 +71,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure sklblMenuMain_layoutClick(Sender: TObject);
     procedure actAbrirLottieAccept(Sender: TObject);
-    procedure sklblMenuMain_PictureClick(Sender: TObject);
     procedure pmMainMenusPopup(Sender: TObject);
     procedure mniLoopClick(Sender: TObject);
     procedure mniVelocidadeClick(Sender: TObject);
@@ -302,12 +301,6 @@ procedure TviewMain.sklblMenuMain_layoutMouseEnter(Sender: TObject);
 begin
   inherited;
   imgMenuMain_Layout.AnimeOneMoretime;
-end;
-
-procedure TviewMain.sklblMenuMain_PictureClick(Sender: TObject);
-begin
-  inherited;
-  actAbrirLottie.Execute;
 end;
 
 procedure TviewMain.sklblMenuMain_PictureMouseEnter(Sender: TObject);
